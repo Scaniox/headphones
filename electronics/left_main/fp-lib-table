@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "BM83")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/Microchip BM83/BM83 breakout/BM83.pretty")(options "")(descr ""))
+)
