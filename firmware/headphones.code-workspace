@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "uC1_firmware",
+			"path": "uC1_firmware"
+		},
+		{
+			"name": "uC2_firmware",
+			"path": "uC2_firmware"
+		}
+	]
+}

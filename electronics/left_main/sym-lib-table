@@ -2,4 +2,5 @@
   (version 7)
   (lib (name "Microchip BM83")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/Microchip BM83/BM83 breakout/Microchip BM83.kicad_sym")(options "")(descr ""))
   (lib (name "AS3435")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/AS3435-EQFM.kicad_sym")(options "")(descr ""))
+  (lib (name "MAX17048")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/MAX17048G+T10/2023-04-14_17-53-33.kicad_sym")(options "")(descr ""))
 )
