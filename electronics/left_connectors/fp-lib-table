@@ -1,0 +1,9 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "USB4110-GF-A_REVB")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/USB4110-GF-A_REVB.pretty")(options "")(descr ""))
+  (lib (name "FH12-18S-0.5SVA(54)")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/FH12-18S-0.5SVA(54)/FH12-18S-0.5SVA(54).pretty")(options "")(descr ""))
+  (lib (name "SJ-3524-SMT")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/SJ-3524-SMT.pretty")(options "")(descr ""))
+  (lib (name "ul_EVQ-P7A01P")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/ul_EVQ-P7A01P/ul_EVQ-P7A01P.pretty")(options "")(descr ""))
+  (lib (name "footprints")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/JS203011JAQN/footprints.pretty")(options "")(descr ""))
+  (lib (name "CUS-13TB")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/CUS-13TB/CUS-13TB.pretty")(options "")(descr ""))
+)
