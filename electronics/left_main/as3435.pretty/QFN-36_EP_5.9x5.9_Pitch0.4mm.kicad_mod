@@ -145,4 +145,9 @@
     (solder_paste_margin -0.75) (thermal_bridge_angle 45) (tstamp 9c592f33-9c9c-416e-997a-dd223aa8f187))
   (pad "37" smd rect (at 1.3125 1.3125) (size 0.875 0.875) (layers "F.Cu" "F.Paste" "F.Mask")
     (solder_paste_margin -0.75) (thermal_bridge_angle 45) (tstamp 9c592f33-9c9c-416e-997a-dd223aa8f187))
+  (model ":KICAD7_3DMODEL_DIR:Package_DFN_QFN.3dshapes/QFN-36-1EP_6x6mm_P0.5mm_EP3.7x3.7mm.step"
+    (offset (xyz 0 0 0))
+    (scale (xyz 0.8 0.8 1))
+    (rotate (xyz 0 0 0))
+  )
 )
