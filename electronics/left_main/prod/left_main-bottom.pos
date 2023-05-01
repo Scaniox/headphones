@@ -1,0 +1,18 @@
+### Footprint positions - created on Sun Apr 30 22:38:36 2023 ###
+### Printed by KiCad version 7.0.1
+## Unit = mm, Angle = deg.
+## Side : bottom
+# Ref     Val                Package                                    PosX       PosY       Rot  Side
+D2        MBR120             D_SOD-123                               84.0000   -54.8000   90.0000  bottom
+IC1       AS3435-EQFM        QFN-36_EP_5.9x5.9_Pitch0.4mm            69.9214   -62.6000    0.0000  bottom
+IC2       AS3435-EQFM        QFN-36_EP_5.9x5.9_Pitch0.4mm            61.9250   -62.6000  180.0000  bottom
+U1        BM83               BM83                                    77.0300   -41.5100  -90.0000  bottom
+U2        ATSAMD21G18_QFN    TQFN-48-1EP_7x7mm_P0.5mm_EP5.1x5.1mm    83.8480   -42.7905  -90.0000  bottom
+U3        MCP73831T-2ACI/OT  SOT-23-5                                87.8000   -54.7650  -90.0000  bottom
+U4        SPX3819-3.3        SOT-23-5                                84.4000   -50.2500  180.0000  bottom
+U5        MAX17048G+T10      21-0168E_T822-3_MXM                     88.1260   -49.7713   90.0000  bottom
+U6        AP2127K-1.8        SOT-23-5                                80.2500   -55.0625  -90.0000  bottom
+U7        AP22814AW5         SOT-23-5                                80.2000   -50.6000   90.0000  bottom
+U8        AP22814AW5         SOT-23-5                                63.6325   -32.8320    0.0000  bottom
+Y1        32.768KHz          Crystal_SMD_3215-2Pin_3.2x1.5mm         81.4265   -36.5665  180.0000  bottom
+## End

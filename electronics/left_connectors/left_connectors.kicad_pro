@@ -45,7 +45,7 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.5
+          "min_clearance": 0.25
         }
       },
       "diff_pair_dimensions": [
@@ -55,7 +55,28 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "copper_edge_clearance|111507246|82530233|1145fd7a-94ac-4b23-bc12-fac6041f003f|364e7d15-9950-4e65-b881-1276e0fbe0a5",
+        "copper_edge_clearance|113898687|88016207|254150a4-809a-408f-ab2f-1b0871702306|76664c31-62e1-46c5-8e59-e438fcce0dc5",
+        "copper_edge_clearance|123464695|83391672|7632629d-9108-4000-8d72-3538c9c81ba2|5ad08145-5654-402e-9d91-59476a527fcb",
+        "copper_edge_clearance|125301873|81487794|ba57a71a-3a0c-4b4c-bfe6-d65a4557374c|045fdc4c-6179-4252-b98b-0bc5bec5257a",
+        "courtyards_overlap|135159999|63824717|27fd1e49-da29-4ed8-9a81-69734c08da07|a04e26c5-10e0-4fd8-a596-839f25dfb376",
+        "courtyards_overlap|135940735|64499999|27fd1e49-da29-4ed8-9a81-69734c08da07|71966b2f-d194-4f0e-990d-be4c955b5b9e",
+        "hole_clearance|104722084|76656585|a521d373-5900-4710-95e3-71533de2c69c|98088129-1b30-43fe-ad94-75af56930eb8",
+        "hole_clearance|114642731|82681653|aae1993d-2287-44a9-aabf-c1ad59808f7f|21e70d58-072f-4eba-bbd8-04c8a477942b",
+        "hole_clearance|114835164|82627160|aae1993d-2287-44a9-aabf-c1ad59808f7f|8d5bbab1-5515-4c90-8ff7-4706d0cd253f",
+        "hole_clearance|120030859|81155849|33bf70e5-7d13-4a26-9e2d-bcd415a43ab7|d9d6b76b-7abc-412d-896d-b60d710f4d84",
+        "hole_clearance|120223292|81101356|33bf70e5-7d13-4a26-9e2d-bcd415a43ab7|76ab0858-2e8f-40b7-b85d-c76b89ce24a5",
+        "lib_footprint_mismatch|113607983|86707174|bb684800-088d-4e14-82cb-eaf5f2a6fbce|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|136400000|64206250|71966b2f-d194-4f0e-990d-be4c955b5b9e|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|138850000|49906250|0adf43e8-ca94-4e1c-a511-0633c95e0bd4|00000000-0000-0000-0000-000000000000",
+        "silk_edge_clearance|100592185|84619028|e7e0186b-6ab9-4530-a680-2c2c1f1d8e02|5c8c5345-7968-4647-a960-967e1d66c583",
+        "silk_edge_clearance|101081056|84733894|e7e0186b-6ab9-4530-a680-2c2c1f1d8e02|33c70575-c1d5-4a62-90c7-14072cd585d2",
+        "silk_edge_clearance|133851169|72628110|ba57a71a-3a0c-4b4c-bfe6-d65a4557374c|c2d750c2-1170-49a4-931a-3e9547139d4c",
+        "silk_edge_clearance|134753875|71692631|ba57a71a-3a0c-4b4c-bfe6-d65a4557374c|3cfe3b16-62d7-4d16-820d-3d164cc05176",
+        "silk_edge_clearance|140521869|59136304|a73173aa-5098-4855-9223-370ed8982370|0db67050-d90d-4a6b-ac8b-30feb211f6dd",
+        "silk_edge_clearance|141372235|55474547|a73173aa-5098-4855-9223-370ed8982370|97b3ece6-6b33-4469-a76e-2ba65eee40c6"
+      ],
       "meta": {
         "version": 2
       },
@@ -111,19 +132,19 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.125,
         "min_connection": 0.0,
-        "min_copper_edge_clearance": 0.0,
+        "min_copper_edge_clearance": 0.19999999999999998,
         "min_hole_clearance": 0.25,
-        "min_hole_to_hole": 0.25,
+        "min_hole_to_hole": 0.5,
         "min_microvia_diameter": 0.19999999999999998,
         "min_microvia_drill": 0.09999999999999999,
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.7999999999999999,
-        "min_text_thickness": 0.08,
+        "min_text_height": 1.0,
+        "min_text_thickness": 0.15,
         "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.0,
+        "min_track_width": 0.125,
         "min_via_annular_width": 0.09999999999999999,
         "min_via_diameter": 0.5,
         "solder_mask_clearance": 0.0,
@@ -172,12 +193,21 @@
         }
       ],
       "track_widths": [
-        0.0
+        0.0,
+        0.0,
+        0.1,
+        0.15,
+        0.25,
+        0.5
       ],
       "via_dimensions": [
         {
           "diameter": 0.0,
           "drill": 0.0
+        },
+        {
+          "diameter": 0.5,
+          "drill": 0.3
         }
       ],
       "zones_allow_external_fillets": false
@@ -441,7 +471,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "left_connectors.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""

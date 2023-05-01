@@ -1,0 +1,6 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "JLS1300-08")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/JLS1300-08.pretty")(options "")(descr ""))
+  (lib (name "ul_EVQ-P7A01P")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/ul_EVQ-P7A01P/ul_EVQ-P7A01P.pretty")(options "")(descr ""))
+  (lib (name "WE 6 Position SKEDD")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/WE 6 Position SKEDD.pretty")(options "")(descr ""))
+)

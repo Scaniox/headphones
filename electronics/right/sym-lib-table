@@ -1,4 +1,4 @@
 (sym_lib_table
   (version 7)
-  (lib (name "odds")(type "KiCad")(uri "${KIPRJMOD}/odds.kicad_sym")(options "")(descr ""))
+  (lib (name "odds")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/odds.kicad_sym")(options "")(descr ""))
 )

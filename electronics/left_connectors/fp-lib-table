@@ -6,4 +6,5 @@
   (lib (name "ul_EVQ-P7A01P")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/ul_EVQ-P7A01P/ul_EVQ-P7A01P.pretty")(options "")(descr ""))
   (lib (name "footprints")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/JS203011JAQN/footprints.pretty")(options "")(descr ""))
   (lib (name "CUS-13TB")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/CUS-13TB/CUS-13TB.pretty")(options "")(descr ""))
+  (lib (name "SCHURTER Inc 4832.2330")(type "KiCad")(uri "C:/Users/alexl/projects/headphones/electronics/components/SCHURTER Inc 4832.2330.pretty")(options "")(descr ""))
 )
