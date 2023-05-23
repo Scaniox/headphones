@@ -5452,7 +5452,7 @@
   (gr_text "FF mic R" (at 69 39.7 90) (layer "F.SilkS") (tstamp 095b90f4-8c99-4ef0-947b-bc9329d8f4cc)
     (effects (font (size 1 1) (thickness 0.15)) (justify left bottom))
   )
-  (gr_text "FF filters" (at 49.2 62.1) (layer "F.SilkS") (tstamp 274ded4f-1f7e-467f-a5b3-4ccb867149c1)
+  (gr_text "FF filters" (at 49.3 60.3) (layer "F.SilkS") (tstamp 274ded4f-1f7e-467f-a5b3-4ccb867149c1)
     (effects (font (size 1 1) (thickness 0.15)) (justify left bottom))
   )
   (gr_text "ear_sense" (at 59.7 36.6) (layer "F.SilkS") (tstamp 4ce3e6b2-8e7b-4e82-90e7-ffe6b4ec363b)
