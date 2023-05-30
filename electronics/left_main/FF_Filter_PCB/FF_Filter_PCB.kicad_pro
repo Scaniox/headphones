@@ -500,7 +500,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "FF_Filter_PCB.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""

@@ -1,0 +1,11 @@
+"Id";"Designator";"Footprint";"Quantity";"Designation";"Supplier and ref";
+1;"R25,R23,R3,R32,R12,R34,R1,R10";"R_0402_1005Metric_Pad0.72x0.64mm_HandSolder";8;"3k";;;
+2;"R39,R8,R17,R30";"R_0402_1005Metric_Pad0.72x0.64mm_HandSolder";4;"1k";;;
+3;"C9,C11,C26,C1,C34,C3,C36,C28";"C_0402_1005Metric_Pad0.74x0.62mm_HandSolder";8;"22nF";;;
+4;"C32,C40,C13,C10,C2,C15,C7,C27,C30,C38,C5,C35";"C_0402_1005Metric_Pad0.74x0.62mm_HandSolder";12;"33nF";;;
+5;"R16,R14,R13,R27,R36,R5,R38,R35,R7,R4,R26,R29";"R_0402_1005Metric_Pad0.72x0.64mm_HandSolder";12;"22k";;;
+6;"R37,R15,R9,R40,R28,R6,R18,R31";"R_0402_1005Metric_Pad0.72x0.64mm_HandSolder";8;"6.2k";;;
+7;"C37,C29,C41,C16,C8,C4,C12,C33";"C_0402_1005Metric_Pad0.74x0.62mm_HandSolder";8;"4.7nF";;;
+8;"R33,R2,R11,R24";"R_0402_1005Metric_Pad0.72x0.64mm_HandSolder";4;"5.5k";;;
+9;"C6,C31,C39,C14";"C_0402_1005Metric_Pad0.74x0.62mm_HandSolder";4;"15nF";;;
+10;"J1";"Hirose_DF12_DF12C3.0-14DS-0.5V_2x07_P0.50mm_Vertical";1;"FB_Filters";;;
