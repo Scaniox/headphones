@@ -24,6 +24,16 @@ https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8495-8-bit-AVR-Microcontr
  * PB3 - reset
  */
 
+/* fuse setup
+ * keep defaults
+ *
+ */
+
+#include <Arduino.h>
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
+#include <avr/wdt.h>
+
 #define P_VOL_UP    PIN_PA2
 #define P_VOL_DOWN  PIN_PA3
 #define P_PAUSE     PIN_PA4
@@ -33,16 +43,25 @@ https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8495-8-bit-AVR-Microcontr
 #define P_OPTO_LED_EN   PIN_PA0
 #define P_OPTO_LDR_EN   PIN_PB2
 #define P_OPTO_OUT      PIN_PA1
+#define P_DATA_OUT      PIN_PA7 // USART0 TX alternate pin
 
-#include <Arduino.h>
-#include <avr/sleep.h>
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
+ // pin change interrupt
+ISR(PCINT0_vect) {
+    uint8_t buttons = 0x80;
+    buttons |= (digitalRead(P_VOL_UP) & 0x01) << 0;
+    buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << 1;
+    buttons |= (digitalRead(P_PAUSE) & 0x01) << 2;
+    buttons |= (digitalRead(P_BACK) & 0x01) << 3;
+    buttons |= (digitalRead(P_FWRD) & 0x01) << 4;
+    Serial.print(buttons);
 
-void pin_change_ISR();
+}
 
+ISR(WDT_vect) { }
 
 void setup() {
+    cli();
+
     // set up pins
     pinMode(P_VOL_UP,   INPUT_PULLUP);
     pinMode(P_VOL_DOWN, INPUT_PULLUP);
@@ -54,29 +73,33 @@ void setup() {
     pinMode(P_OPTO_LED_EN,  OUTPUT);
     pinMode(P_OPTO_OUT,     INPUT);
 
+    // setup button interrupts
+    GIMSK |= _BV(PCIE0);
+    PCMSK0 |= _BV(PCINT2) | _BV(PCINT3) |_BV(PCINT4) | _BV(PCINT5) |
+              _BV(PCINT6); 
+
     // set up uart
     Serial.begin(9600);
+    // dissable RX
+    UCSR0B &= ~_BV(RXEN0); // disable RX
+    // set to alternate pin (PA7)
+    REMAP |= _BV(U0MAP);
 
     // // set up WDT
     // WDTCSR |= 1 << WDIE; // WDT interrupt
-    // attachInterrupt(WDT_vect_num, func, CHANGE);
 
     // // start WDT
     // wdt_enable(WDTO_120MS);
 
-    // setup button interrupts
-    attachInterrupt(PCINT0_vect_num, pin_change_ISR, CHANGE); 
-    PCMSK0 |= _BV(PCINT2) | _BV(PCINT3) |
-              _BV(PCINT4) | _BV(PCINT5) | _BV(PCINT6); 
-
+    sei();
 }
 
 void loop() {
+    cli();
     // pause WDT
     // sleep_disable();
     // wdt_disable();
     
-
     // ear sense measurement
     digitalWrite(P_OPTO_LDR_EN, HIGH);
     uint8_t dark_ear_sense = analogRead(P_OPTO_OUT) >> 1;
@@ -93,6 +116,8 @@ void loop() {
     // start / reset WDT
     // wdt_enable(WDTO_120MS);
 
+    sei();
+
     // // go to Power down mode
     // sleep_enable();
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
@@ -101,15 +126,3 @@ void loop() {
     delay(100);
 }
 
-
-// pin change interrupt
-void pin_change_ISR() {
-    uint8_t buttons = 0x80;
-    buttons |= (digitalRead(P_VOL_UP) & 0x01) << 0;
-    buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << 1;
-    buttons |= (digitalRead(P_PAUSE) & 0x01) << 2;
-    buttons |= (digitalRead(P_BACK) & 0x01) << 3;
-    buttons |= (digitalRead(P_FWRD) & 0x01) << 4;
-    Serial.print(buttons);
-
-}
