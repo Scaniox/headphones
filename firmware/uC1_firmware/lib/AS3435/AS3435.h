@@ -1,6 +1,8 @@
 #ifndef ADAFRUIT_AS3435_H
 #define ADAFRUIT_AS3435_H
 
+// adapted from https://github.com/adafruit/Adafruit_MPR121
+
 #include "Arduino.h"
 #include <Adafruit_BusIO_Register.h>
 #include <Adafruit_I2CDevice.h>
