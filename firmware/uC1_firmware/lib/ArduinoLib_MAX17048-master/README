@@ -1,0 +1,9 @@
+MAX17048/49 library for Arduino
+
+The MAX17048/MAX17049 ICs are tiny, micropower
+current fuel gauges for lithium-ion (Li+) batteries in handheld
+and portable equipment. The MAX17048 operates
+with a single lithium cell and the MAX17049 with two
+lithium cells in series.
+
+https://www.maximintegrated.com/en/products/power/battery-management/MAX17048.html

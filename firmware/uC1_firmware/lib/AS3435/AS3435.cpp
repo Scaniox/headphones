@@ -13,7 +13,7 @@ AS3435::AS3435() {}
  *  @brief    Begin an AS3435 object on a given I2C bus. This function resets
  *            the device and writes the default settings.
  *  @param    i2caddr
- *            the i2c address the device can be found on. Defaults to 0x5A.
+ *            the i2c address the device can be found on. Defaults to 0x46.
  *  @param    *theWire
  *            Wire object
  */

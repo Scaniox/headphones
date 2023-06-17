@@ -9,6 +9,10 @@
 
 // globals
 Adafruit_NeoPixel indicator_LEDs;
+AS3435 as3435_L;
+AS3435 as3435_R;
+IS2020 bm83;
+MAX17048 fuel_guage;
 
 OPERATION_STATES current_state = OFF;
 OPERATION_STATES last_state = OFF;
@@ -95,8 +99,20 @@ void setup() {
     indicator_LEDs.show();
 
     // set up i2c bus
+    Wire.begin();
     Wire.setClock(400000);
 
+    // set up fuel guage
+    fuel_guage.reset();
+    fuel_guage.quickStart();
+
+    // set up AS3435
+    as3435_L.begin(AS3435_I2CADDR_L);
+    as3435_R.begin(AS3435_I2CADDR_R);
+
+    // set up BM83
+    Serial1.begin(115200);
+    bm83.begin(Serial1);
 
 }
 

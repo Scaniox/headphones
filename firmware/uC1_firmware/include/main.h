@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include <samd21\include\samd21g18a.h>
 #include <AS3435.h>
+#include <MAX17048.h>
 #include <IS2020.h>
 #include <Adafruit_NeoPixel.h>
 
