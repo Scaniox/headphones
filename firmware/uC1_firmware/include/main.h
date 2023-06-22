@@ -17,7 +17,7 @@
 #define BAT_UVLO 3.6
 
 // pin definitions
-#define PIN_EAR_SENSE_L_EN      PIN_PA04 
+#define PIN_EAR_SENSE_L_EN      PIN_PA04 `
 #define PIN_EAR_SENSE_L_OUT     PIN_PA05
 #define PIN_BM83_PROG_EN        PIN_PA06
 #define PIN_BAT_V_SENSE         PIN_PA07
