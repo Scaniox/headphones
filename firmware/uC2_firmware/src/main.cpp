@@ -104,7 +104,7 @@ void loop() {
     digitalWrite(P_OPTO_LDR_EN, HIGH);
     uint8_t dark_ear_sense = analogRead(P_OPTO_OUT) >> 1;
     digitalWrite(P_OPTO_LED_EN, HIGH);
-    delay(2);
+    delay(100);
     uint8_t bright_ear_sense = analogRead(P_OPTO_OUT) >> 1;
     digitalWrite(P_OPTO_LED_EN, LOW);
     digitalWrite(P_OPTO_LDR_EN, LOW);
@@ -123,6 +123,6 @@ void loop() {
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     // sleep_cpu();
 
-    delay(100);
+    delay(500);
 }
 
