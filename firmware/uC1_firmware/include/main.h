@@ -14,36 +14,33 @@
 #include <Adafruit_NeoPixel.h>
 
 // settings
-#define BAT_UVLO 3.6
+#define VOL_MAX 100
 
 // pin definitions
-#define PIN_EAR_SENSE_L_EN      PIN_PA04 `
-#define PIN_EAR_SENSE_L_OUT     PIN_PA05
-#define PIN_BM83_PROG_EN        PIN_PA06
-#define PIN_BAT_V_SENSE         PIN_PA07
+#define PIN_EAR_SENSE_L_EN      A3
+#define PIN_EAR_SENSE_L_OUT     A4
+#define PIN_BM83_PROG_EN        8u
+#define PIN_BAT_V_SENSE         9u 
 
-#define PIN_PWR_MFB             PIN_PA08
-#define PIN_RIGHT_SIDE_DATA     PIN_PA09
-#define PIN_BM83_UART_RX        PIN_PA10
-#define PIN_BM83_UART_TX        PIN_PA11
+#define PIN_PWR_MFB             4u
+#define PIN_RIGHT_SIDE_DATA     3u
+#define PIN_BM83_UART_RX        1u
+#define PIN_BM83_UART_TX        0u
 
-#define PIN_LEDS_DATA_IN        PIN_PA14
-#define PIN_3V3_EN              PIN_PA15
-#define PIN_AUDIO_IN_DETECT     PIN_PA16
-#define PIN_RED_LED             PIN_PA17
-#define PIN_PWR_SW              PIN_PA18
-#define PIN_ANC_ON              PIN_PA19
-#define PIN_ANC_OFF             PIN_PA20
-#define PIN_ANC_PBO             PIN_PA21
+#define PIN_LEDS_DATA_IN        2u
+#define PIN_3V3_EN              5u
+#define PIN_AUDIO_IN_DETECT     11u
+#define PIN_RED_LED             PIN_LED
+#define PIN_PWR_SW              10u
+#define PIN_ANC_ON              12u
+#define PIN_ANC_OFF             6u
+#define PIN_ANC_PBO             7u
 
 // operation modes
 enum OPERATION_STATES {
-    OFF,
-    BATTERY_EMPTY,
-    ON,
-    ONE_EAR,
-    OFF_EAR,
-    CHARGING,
+    STATE_OFF,
+    STATE_ON,
+    PAIRING,
 };
 
 
@@ -51,4 +48,13 @@ enum ANC_MODE {
     ANC,
     MONITOR,
     PBO,
+};
+
+// right side button mask
+enum {
+    VOL_UP,
+    VOL_DOWN,
+    PAUSE,
+    BACK,
+    FWRD,
 };

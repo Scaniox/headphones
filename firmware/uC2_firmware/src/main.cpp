@@ -34,6 +34,15 @@ https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8495-8-bit-AVR-Microcontr
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
+enum {
+    VOL_UP,
+    VOL_DOWN,
+    PAUSE,
+    BACK,
+    FWRD,
+};
+
+
 #define P_VOL_UP    PIN_PA2
 #define P_VOL_DOWN  PIN_PA3
 #define P_PAUSE     PIN_PA4
@@ -48,11 +57,11 @@ https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8495-8-bit-AVR-Microcontr
  // pin change interrupt
 ISR(PCINT0_vect) {
     uint8_t buttons = 0x80;
-    buttons |= (digitalRead(P_VOL_UP) & 0x01) << 0;
-    buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << 1;
-    buttons |= (digitalRead(P_PAUSE) & 0x01) << 2;
-    buttons |= (digitalRead(P_BACK) & 0x01) << 3;
-    buttons |= (digitalRead(P_FWRD) & 0x01) << 4;
+    buttons |= (digitalRead(P_VOL_UP) & 0x01)   << VOL_UP;
+    buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << VOL_DOWN;
+    buttons |= (digitalRead(P_PAUSE) & 0x01)    << PAUSE;
+    buttons |= (digitalRead(P_BACK) & 0x01)     << BACK;
+    buttons |= (digitalRead(P_FWRD) & 0x01)     << FWRD;
     Serial.print(buttons);
 
 }
