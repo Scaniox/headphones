@@ -15,6 +15,7 @@
 
 // settings
 #define VOL_MAX 100
+#define POWER_ANIM_BLINK_TIME 300
 
 // pin definitions
 #define PIN_EAR_SENSE_L_EN      A3
@@ -40,14 +41,21 @@
 enum OPERATION_STATES {
     STATE_OFF,
     STATE_ON,
-    PAIRING,
+    STATE_PAIRING,
 };
-
 
 enum ANC_MODE {
     ANC,
     MONITOR,
     PBO,
+};
+
+// animations 
+enum ANIMATIONS {
+    ANIM_NONE,
+    ANIM_POWER_ON,
+    ANIM_POWER_OFF,
+    ANIM_PAIRING,
 };
 
 // right side button mask

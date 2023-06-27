@@ -9,12 +9,12 @@
 
 // globals
 Adafruit_NeoPixel indicator_LEDs(2, PIN_LEDS_DATA_IN);
-// AS3435 as3435_L;
-// AS3435 as3435_R;
-// IS2020 bm83(&Serial1);
-// MAX17048 fuel_guage;
+AS3435 as3435_L;
+AS3435 as3435_R;
+IS2020 bm83(&Serial1);
+MAX17048 fuel_guage;
+Uart right_serial(&sercom2, PIN_RIGHT_SIDE_DATA, -1, SERCOM_RX_PAD_1, UART_TX_PAD_0);
 
-// Uart right_serial(&sercom2, PIN_RIGHT_SIDE_DATA, -1, SERCOM_RX_PAD_1, UART_TX_PAD_0);
 
 
 OPERATION_STATES current_state = STATE_OFF;
@@ -25,6 +25,9 @@ int current_device = 0;
 uint8_t volume = 100;
 
 uint32_t power_button_pressed_start_time = 0;
+uint32_t animation_start_time = 0;
+ANIMATIONS current_animation = ANIM_NONE;
+bool animations = true;
 
 /******************************************************************************/
 // helper functions
@@ -54,15 +57,17 @@ void power_off() {
 
 void power_on() {
     current_state = STATE_ON;
+    animation_start_time = millis();
+    current_animation = ANIM_POWER_ON;
     digitalWrite(PIN_3V3_EN, HIGH);
 
     // set up AS3435
-    // as3435_L.begin(AS3435_I2CADDR_L);
-    // as3435_R.begin(AS3435_I2CADDR_R);
+    as3435_L.begin(AS3435_I2CADDR_L);
+    as3435_R.begin(AS3435_I2CADDR_R);
 
     // default leds
-    // set_ANC_indicator(0);
-    // set_power_indicator(indicator_LEDs.Color(0,0,255));
+    set_ANC_indicator(0);
+    set_power_indicator(indicator_LEDs.Color(0,255,255));
 
     digitalWrite(PIN_LED, HIGH);
 
@@ -98,17 +103,16 @@ void power_button_up_isr() {
     switch (current_state)
     {
     case STATE_ON:
+    case STATE_PAIRING:
         if (500 < press_duration && press_duration < 2000) {
-            power_off();
+            current_animation = ANIM_POWER_OFF;
+            animation_start_time = millis();
         }
         break;
     case STATE_OFF:
         if (press_duration < 2000) {
             power_on();
         }
-        break;
-    
-    default:
         break;
     }
 
@@ -160,22 +164,22 @@ void setup() {
     pinMode(PIN_ANC_PBO, INPUT_PULLUP);
 
     // set up i2c bus
-    // Wire.begin();
-    // Wire.setClock(400000);
+    Wire.begin();
+    Wire.setClock(400000);
 
-    // // set up fuel guage
-    // fuel_guage.reset();
-    // fuel_guage.quickStart();
+    // set up fuel guage
+    fuel_guage.reset();
+    fuel_guage.quickStart();
 
     // usb serial
     Serial.begin(115200);
 
     // set up BM83
-    // Serial1.begin(115200);
-    // bm83.begin(-1);
+    Serial1.begin(115200);
+    bm83.begin(-1);
 
     // set up right side serial
-    //right_serial.begin(9600);
+    right_serial.begin(9600);
     // pinPeripherial(PIN_RIGHT_SIDE_DATA, PIO_SERCOM);
 
     // assign interrupts
@@ -188,13 +192,11 @@ void setup() {
 
     indicator_LEDs.begin();
 
-    indicator_LEDs.fill(0x000f0f0f);
-    indicator_LEDs.setPixelColor(0, indicator_LEDs.Color(255,0,0));
+    indicator_LEDs.fill(0x00ffffff);
     indicator_LEDs.show();
 
     delay(500);
 
-    set_power_indicator(indicator_LEDs.Color(0, 0, 255));
 }
 
 void loop() {
@@ -269,6 +271,45 @@ void loop() {
 
         //   detect wired audio in and enable AS3435 bypass
 
+        // animate LEDs
+        if (animations) {
+            uint32_t animation_time = millis() - animation_start_time;
+            switch (current_animation)
+            {
+            case ANIM_POWER_ON:
+                if (animation_time < POWER_ANIM_BLINK_TIME * 2.5f){
+                    if (animation_time % (POWER_ANIM_BLINK_TIME) < (POWER_ANIM_BLINK_TIME / 2)) {
+                        set_power_indicator(0x0000ffff);
+                    }
+                    else {
+                        set_power_indicator(0);
+                    }  
+                }
+
+                break;
+            case ANIM_POWER_OFF:
+                if (animation_time < POWER_ANIM_BLINK_TIME * 2) {
+                    if (animation_time % (POWER_ANIM_BLINK_TIME) < (POWER_ANIM_BLINK_TIME / 2)) {
+                        set_power_indicator(0x00ff0000);
+                    }
+                    else {
+                        set_power_indicator(0);
+                    }
+                }
+                else {
+                    power_off();
+                }
+                break;
+            case ANIM_PAIRING:
+
+                break;
+            
+            default:
+                break;
+            }
+        }
+
+
         //   Reset wakeup timer
         //   sleep
         break;
@@ -285,16 +326,5 @@ void loop() {
         input.concat((char)Serial.read());
         Serial.println(input);
     }
-    // int end_index = input.indexOf('a');
-    // if( end_index > -1 ) {
-
-    // }
-
-    set_ANC_indicator(indicator_LEDs.Color(255,0,0));
-    set_power_indicator(indicator_LEDs.Color(255, 255, 0));
-    delay(500);
-    set_ANC_indicator(indicator_LEDs.Color(0, 255, 0));
-    set_power_indicator(indicator_LEDs.Color(0, 255, 255));
-    delay(500);
 
 }
