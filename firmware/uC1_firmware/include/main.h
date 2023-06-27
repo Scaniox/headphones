@@ -15,7 +15,12 @@
 
 // settings
 #define VOL_MAX 100
-#define POWER_ANIM_BLINK_TIME 300
+#define POWER_ANIM_BLINK_TIME 150
+#define PAIRING_ANIM_BLINK_TIME 300
+
+// button timings
+#define PAIRING_HOLD_TIME 2000
+#define POWER_OFF_HOLD_TIME 500
 
 // pin definitions
 #define PIN_EAR_SENSE_L_EN      A3
@@ -66,3 +71,51 @@ enum {
     BACK,
     FWRD,
 };
+
+
+// colours
+#define POWER_ON_BLUE           0x0000ffff
+#define POWER_OFF_RED           0x00ff0000
+#define DISCONECTED_ORANGE      0x00ff7300
+#define DEVICE_ONE_GREEN        0x0000ff00
+#define DEVICE_TWO_PURPLE       0x008000ff
+
+
+// function declarations
+/******************************************************************************/
+// action functions
+/******************************************************************************/
+// set indicator LEDS
+void set_ANC_indicator(uint32_t colour);
+void set_power_indicator(uint32_t colour);
+
+// animations
+void start_animation(ANIMATIONS anim);
+void update_animations();
+
+// devices
+void switch_device(uint8_t device);
+
+// power
+void power_off();
+void power_on();
+void start_pairing();
+
+// debug usb
+void dissable_debug_USB();
+void enable_debug_USB();
+void send_full_status();
+void debug_parse(String s);
+
+/******************************************************************************/
+// interrupts
+/******************************************************************************/
+// power button isrs
+void power_button_down_isr();
+void power_button_up_isr();
+void power_button_isr();
+
+// serial isrs
+
+// right side 
+void right_button_press_handler(char right_side_data);
