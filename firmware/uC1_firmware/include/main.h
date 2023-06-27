@@ -32,6 +32,7 @@
 #define PIN_RIGHT_SIDE_DATA     3u
 #define PIN_BM83_UART_RX        1u
 #define PIN_BM83_UART_TX        0u
+#define PIN_BM83_RESET          A5
 
 #define PIN_LEDS_DATA_IN        2u
 #define PIN_3V3_EN              5u
@@ -106,6 +107,7 @@ void dissable_debug_USB();
 void enable_debug_USB();
 void send_full_status();
 void debug_parse(String s);
+void bm83_serial_bridge();
 
 /******************************************************************************/
 // interrupts

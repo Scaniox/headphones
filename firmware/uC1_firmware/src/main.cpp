@@ -7,6 +7,9 @@
  ******************************************************************************/
 #include "main.h"
 
+const char bm83_prog_bytes[] = { 0x01, 0x20, 0xFC, 0x00 };
+const String bm83_prog_str(bm83_prog_bytes);
+
 // globals
 Adafruit_NeoPixel indicator_LEDs(2, PIN_LEDS_DATA_IN);
 AS3435 as3435_L;
@@ -178,6 +181,8 @@ void power_on() {
     as3435_L.begin(AS3435_I2CADDR_L);
     as3435_R.begin(AS3435_I2CADDR_R);
 
+    bm83.resetModule();
+
     // default leds
     set_ANC_indicator(0);
     set_power_indicator(0);
@@ -228,7 +233,61 @@ void debug_parse(String s) {
     if (s == "stat") {
         send_full_status();
     }
+
+    if (s == "q") {
+        bm83.readLocalDeviceName();
+        Serial.println("NAME:");
+        Serial.println(bm83.localDeviceName);
+    }
 }
+
+void bm83_serial_bridge() {
+    indicator_LEDs.fill(0x00ff0000);
+    indicator_LEDs.show();
+    
+    digitalWrite(PIN_BM83_RESET, LOW);
+    digitalWrite(PIN_BM83_PROG_EN, LOW);
+    delay(200);
+    digitalWrite(PIN_BM83_RESET, HIGH);
+    delay(200);
+
+
+    // setup serial
+    Serial1.begin(115200);
+    Serial1.print(bm83_prog_str);
+    // rolling 24 (incl null) char buffer
+    char in_buff[24] = "test  test  test  test ";
+
+    while (true)
+    {
+        // PC to BM83
+        if (Serial.available())
+        {
+            char c = Serial.read();
+            // process input for "mcu_serial_bridge_exit"
+            strcpy(in_buff, in_buff + 1);
+            strncat(in_buff, &c, 1);
+
+            if (strcmp(in_buff, "mcu_serial_bridge_exit\n") == 0)
+            {
+                Serial.printf("exiting serial bridge mode\n");
+                break;
+            }
+
+            // copy from PC to BM83
+            Serial1.write(c);
+        }
+
+        // bm83 to PC
+        if (Serial1.available())
+        {
+            Serial.write(Serial1.read());
+        }
+    }
+
+    digitalWrite(PIN_BM83_PROG_EN, HIGH);
+}
+
 
 /******************************************************************************/
 // interrupts
@@ -335,9 +394,7 @@ void SERCOM2_Handler() {
             ear_R_light_reading = right_serial.read();
         }
     }
-
 }
-
 
 
 /******************************************************************************/
@@ -354,6 +411,7 @@ void setup() {
     pinMode(PIN_RIGHT_SIDE_DATA, INPUT);
     pinMode(PIN_BM83_UART_RX, INPUT);
     pinMode(PIN_BM83_UART_TX, OUTPUT);
+    pinMode(PIN_BM83_RESET, OUTPUT);
 
     pinMode(PIN_3V3_EN, OUTPUT);
     pinMode(PIN_AUDIO_IN_DETECT, INPUT);
@@ -381,7 +439,7 @@ void setup() {
 
     // set up BM83
     Serial1.begin(115200);
-    bm83.begin(-1);
+    bm83.begin(PIN_BM83_RESET);
 
     // set up right side serial
     right_serial.begin(9600);
@@ -400,6 +458,8 @@ void setup() {
     indicator_LEDs.show();
 
     delay(500);
+
+    pinMode(27u, OUTPUT);
 }
 
 void loop() {
@@ -455,9 +515,16 @@ void loop() {
         break;
     }
 
+    bm83.getNextEventFromBt();
+
     // process debug serial
     if (debug_serial) {
         while (Serial.available()) {
+            digitalWrite(PIN_RED_LED, HIGH);
+            delay(100);
+            digitalWrite(PIN_RED_LED, LOW);
+            delay(100);
+
             char c = Serial.read();
             if(c == '\n'){
                 debug_parse(debug_input);
@@ -465,6 +532,11 @@ void loop() {
             }
             else {
                 debug_input.concat(c);
+
+                if (debug_input == bm83_prog_str){
+                    debug_input = "";
+                    bm83_serial_bridge();
+                }
             }
 
         }
