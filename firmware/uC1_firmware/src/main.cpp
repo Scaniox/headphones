@@ -162,7 +162,6 @@ void switch_device(uint8_t device) {
     start_animation(ANIM_NONE);
 }
 
-
 // power
 void power_off() {
     current_state = STATE_OFF;
@@ -180,8 +179,13 @@ void power_on() {
     // set up AS3435
     as3435_L.begin(AS3435_I2CADDR_L);
     as3435_R.begin(AS3435_I2CADDR_R);
+    as3435_L.pbo_mode();
+    as3435_R.pbo_mode();
 
     bm83.resetModule();
+    delay(1000);
+    digitalWrite(PIN_BM83_MFB, HIGH);
+    delay(1000);
 
     // default leds
     set_ANC_indicator(0);
@@ -196,6 +200,8 @@ void start_pairing() {
     if (current_state == STATE_OFF) {
         power_on();
     }
+
+    bm83.enterPairingMode(current_device);
 
     current_state = STATE_PAIRING;
     start_animation(ANIM_PAIRING);
@@ -239,9 +245,23 @@ void debug_parse(String s) {
         Serial.println("NAME:");
         Serial.println(bm83.localDeviceName);
     }
+
+    if (s == "bt stat") {
+        Serial.printf("module state: %s\n", bm83.moduleState().c_str());
+        Serial.printf("bt state: %s\n", bm83.btStatus().c_str());
+
+        for(int dev_id = 0; dev_id < 2; dev_id++) {
+            Serial.printf("device: %i\n", dev_id);
+            Serial.printf("music status: %s\n", bm83.musicStatus(dev_id).c_str());
+            Serial.printf("connection status: %s\n", bm83.connectionStatus(dev_id).c_str());
+            Serial.printf("stream status: %s\n", bm83.streamStatus(dev_id).c_str());
+            Serial.println();
+        }
+    }
 }
 
 void bm83_serial_bridge() {
+    current_state = STATE_BM83_PROG;
     indicator_LEDs.fill(0x00ff0000);
     indicator_LEDs.show();
     
@@ -314,22 +334,27 @@ void power_button_up_isr() {
     power_button_pressed = false;
 
     switch (current_state) {
-    case STATE_ON:
-        if (press_duration <= POWER_OFF_HOLD_TIME) {
-            switch_device((current_device + 1) % 2);
-        }
-        // deliberate fall through so power off works in both
-    case STATE_PAIRING:
-        if (POWER_OFF_HOLD_TIME < press_duration && press_duration <= PAIRING_HOLD_TIME) {
-            start_animation(ANIM_POWER_OFF);
-        }
-        break;
-    case STATE_OFF:
-        if (press_duration < PAIRING_HOLD_TIME) {
-            power_on();
-        }
-        break;
+        case STATE_ON:
+            if (press_duration <= POWER_OFF_HOLD_TIME) {
+                switch_device((current_device + 1) % 2);
+            }
+            // deliberate fall through so power off works in both
+        case STATE_PAIRING:
+            if (POWER_OFF_HOLD_TIME < press_duration && press_duration <= PAIRING_HOLD_TIME) {
+                start_animation(ANIM_POWER_OFF);
+            }
+            break;
+        case STATE_OFF:
+            if (press_duration < PAIRING_HOLD_TIME) {
+                power_on();
+            }
+            break;
+        case STATE_BM83_PROG:
+            // reset system to exit programming mode
+            NVIC_SystemReset();
+            break;
     }
+    
 
 }
 
@@ -407,7 +432,7 @@ void setup() {
     pinMode(PIN_BM83_PROG_EN, OUTPUT);
     pinMode(PIN_BAT_V_SENSE, INPUT);
 
-    pinMode(PIN_PWR_MFB, OUTPUT);
+    pinMode(PIN_BM83_MFB, OUTPUT);
     pinMode(PIN_RIGHT_SIDE_DATA, INPUT);
     pinMode(PIN_BM83_UART_RX, INPUT);
     pinMode(PIN_BM83_UART_TX, OUTPUT);
@@ -438,6 +463,7 @@ void setup() {
     Serial.begin(115200);
 
     // set up BM83
+    digitalWrite(PIN_BM83_PROG_EN, HIGH); // normal boot, not prog boot
     Serial1.begin(115200);
     bm83.begin(PIN_BM83_RESET);
 
@@ -459,60 +485,61 @@ void setup() {
 
     delay(500);
 
-    pinMode(27u, OUTPUT);
 }
 
 void loop() {
-    switch (current_state)
-    {
-    case STATE_OFF:
-        if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
-            && power_button_pressed) {
-            start_pairing();
-        }
-        
-        break;                               
+    switch (current_state) {
+        case STATE_OFF:
+            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
+                && power_button_pressed) {
+                start_pairing();
+            }
+            
+            break;                               
 
-    case STATE_ON:
-        //   Read battery charge :
-        // float bat_SoC = fuel_guage.getSoC();
-        // • Power off if too low
-        //   • Low battery audible warning(every 15 mins)
-        //   • BM83 updates connected device
+        case STATE_ON:
+            //   Read battery charge :
+            // float bat_SoC = fuel_guage.getSoC();
+            // • Power off if too low
+            //   • Low battery audible warning(every 15 mins)
+            //   • BM83 updates connected device
 
-        // power off it the battery is critically low
+            // power off it the battery is critically low
 
-        //   Read on ear sensors :
-        // • One ear : reduce volume
-        //   • Both ears : pause
+            //   Read on ear sensors :
+            // • One ear : reduce volume
+            //   • Both ears : pause
 
-        //   Read power button press duration :
-        //   • Enter pairing mode
-        if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
-            && power_button_pressed) {
-            start_pairing();
-        }
+            //   Read power button press duration :
+            //   • Enter pairing mode
+            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
+                && power_button_pressed) {
+                start_pairing();
+            }
 
-        //   Read ANC slider
-        //   • Update both AS3435
+            //   Read ANC slider
+            //   • Update both AS3435
 
-        //   detect wired audio in and enable AS3435 bypass
+            //   detect wired audio in and enable AS3435 bypass
 
-        // animate LEDs
-        if (animations) {
-            update_animations();
-        }
+            // animate LEDs
+            if (animations) {
+                update_animations();
+            }
 
-        //   Reset wakeup timer
-        //   sleep
-        break;
+            //   Reset wakeup timer
+            //   sleep
+            break;
 
-    case STATE_PAIRING:
-        if (animations) {
-            update_animations();
-        }
+        case STATE_PAIRING:
+            if (animations) {
+                update_animations();
+            }
 
-        break;
+            break;
+
+        default:
+            break;
     }
 
     bm83.getNextEventFromBt();
@@ -520,10 +547,10 @@ void loop() {
     // process debug serial
     if (debug_serial) {
         while (Serial.available()) {
-            digitalWrite(PIN_RED_LED, HIGH);
-            delay(100);
-            digitalWrite(PIN_RED_LED, LOW);
-            delay(100);
+            // digitalWrite(PIN_RED_LED, HIGH);
+            // delay(100);
+            // digitalWrite(PIN_RED_LED, LOW);
+            // delay(100);
 
             char c = Serial.read();
             if(c == '\n'){

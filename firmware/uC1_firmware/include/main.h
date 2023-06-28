@@ -18,6 +18,10 @@
 #define POWER_ANIM_BLINK_TIME 150
 #define PAIRING_ANIM_BLINK_TIME 300
 
+#define DEBUG 1
+#define DEBUG_AVRCP 1
+#define DEBUG_EVENTS 1
+
 // button timings
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500
@@ -28,8 +32,8 @@
 #define PIN_BM83_PROG_EN        8u
 #define PIN_BAT_V_SENSE         9u 
 
-#define PIN_PWR_MFB             4u
 #define PIN_RIGHT_SIDE_DATA     3u
+#define PIN_BM83_MFB            4u
 #define PIN_BM83_UART_RX        1u
 #define PIN_BM83_UART_TX        0u
 #define PIN_BM83_RESET          A5
@@ -48,6 +52,7 @@ enum OPERATION_STATES {
     STATE_OFF,
     STATE_ON,
     STATE_PAIRING,
+    STATE_BM83_PROG,
 };
 
 enum ANC_MODE {
