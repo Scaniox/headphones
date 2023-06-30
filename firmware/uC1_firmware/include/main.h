@@ -7,6 +7,7 @@
  ******************************************************************************/
 
 #include <Arduino.h>
+#include "wiring_private.h" // pinPeripheral() function
 #include <samd21\include\samd21g18a.h>
 #include <AS3435.h>
 #include <MAX17048.h>
@@ -46,6 +47,9 @@
 #define PIN_ANC_ON              12u
 #define PIN_ANC_OFF             6u
 #define PIN_ANC_PBO             7u
+
+#define PIN_CHRG_STAT           MOSI
+#define PIN_BAT_ALRT            MISO
 
 // operation modes
 enum OPERATION_STATES {

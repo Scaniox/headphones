@@ -178,14 +178,15 @@ void power_on() {
 
     // set up AS3435
     as3435_L.begin(AS3435_I2CADDR_L);
-    as3435_R.begin(AS3435_I2CADDR_R);
     as3435_L.pbo_mode();
+    delay(3);
+    as3435_R.begin(AS3435_I2CADDR_R);
     as3435_R.pbo_mode();
 
     bm83.resetModule();
-    delay(1000);
-    digitalWrite(PIN_BM83_MFB, HIGH);
-    delay(1000);
+    // delay(1000);
+    // digitalWrite(PIN_BM83_MFB, HIGH);
+    // delay(1000);
 
     // default leds
     set_ANC_indicator(0);
@@ -220,7 +221,9 @@ void send_full_status() {
     Serial.printf("=================CURRENT STATUS=================\n");
     Serial.printf("current_state: %i\n", current_state);
     Serial.printf("anc_mode: %i\n", anc_mode);
-    Serial.printf("charging: %i\n", charging);
+    Serial.printf("charging: %i\n", digitalRead(PIN_CHRG_STAT));
+    Serial.printf("bat soc: %f\n", fuel_guage.getSoC());
+    Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
     Serial.printf("devices_connected: {%i, %i}\n", devices_connected[0], devices_connected[1]);
     Serial.printf("current_device: %i\n", current_device);
     Serial.printf("volume: %i\n", volume);
@@ -382,24 +385,29 @@ void right_button_press_handler(char right_side_data) {
             // increase volume
             volume = min((volume + 10), VOL_MAX);
             bm83.avrcpSetAbsoluteVolume(current_device, volume);
+            Serial.println("VOL_UP");
         }
 
         if (right_side_data & (1 << VOL_DOWN)) {
             // decrease volume
             volume = max((volume - 10), 0);
             bm83.avrcpSetAbsoluteVolume(current_device, volume);
+            Serial.println("VOL_DOWN");
         }
 
         if (right_side_data & (1 << PAUSE)) {
             bm83.togglePlayPause(current_device);
+            Serial.println("pause");
         }
 
         if (right_side_data & (1 << BACK)) {
             bm83.previousSong(current_device);
+            Serial.println("baack");
         }
 
         if (right_side_data & (1 << FWRD)) {
             bm83.nextSong(current_device);
+            Serial.println("fwrd");
         }
     }
 }
@@ -407,17 +415,18 @@ void right_button_press_handler(char right_side_data) {
 void SERCOM2_Handler() {
     right_serial.IrqHandler();
     if (right_serial.available()) {
-        // determine data type:
-        // button presses
-        if (right_serial.peek() && 0x80) {
-            right_button_press_handler(right_serial.read());
-        }
+        Serial.printf("right side data: 0x%x\n", right_serial.read());
+    //     // determine data type:
+    //     // button presses
+    //     if (right_serial.peek() && 0x80) {
+    //         right_button_press_handler(right_serial.read());
+    //     }
 
-        // ear sense data ( must be 2 bytes)
-        else if (right_serial.available() >= 2) {
-            ear_R_dark_reading = right_serial.read();
-            ear_R_light_reading = right_serial.read();
-        }
+    //     // ear sense data ( must be 2 bytes)
+    //     else if (right_serial.available() >= 2) {
+    //         ear_R_dark_reading = right_serial.read();
+    //         ear_R_light_reading = right_serial.read();
+    //     }
     }
 }
 
@@ -446,6 +455,9 @@ void setup() {
     pinMode(PIN_ANC_OFF, INPUT_PULLUP);
     pinMode(PIN_ANC_PBO, INPUT_PULLUP);
 
+    pinMode(PIN_CHRG_STAT, INPUT_PULLUP);
+    pinMode(PIN_BAT_ALRT, INPUT_PULLUP);
+
     // dissable debug usb if not needed
     if (!debug_serial) {
         dissable_debug_USB();
@@ -469,7 +481,7 @@ void setup() {
 
     // set up right side serial
     right_serial.begin(9600);
-    // pinPeripherial(PIN_RIGHT_SIDE_DATA, PIO_SERCOM);
+    pinPeripheral(PIN_RIGHT_SIDE_DATA, PIO_SERCOM_ALT);
 
     // assign interrupts
     attachInterrupt(digitalPinToInterrupt(PIN_PWR_SW), power_button_isr, CHANGE);

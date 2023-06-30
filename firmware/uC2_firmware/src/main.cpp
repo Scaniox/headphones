@@ -56,13 +56,14 @@ enum {
 
  // pin change interrupt
 ISR(PCINT0_vect) {
-    uint8_t buttons = 0x80;
-    buttons |= (digitalRead(P_VOL_UP) & 0x01)   << VOL_UP;
-    buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << VOL_DOWN;
-    buttons |= (digitalRead(P_PAUSE) & 0x01)    << PAUSE;
-    buttons |= (digitalRead(P_BACK) & 0x01)     << BACK;
-    buttons |= (digitalRead(P_FWRD) & 0x01)     << FWRD;
-    Serial.print(buttons);
+    // delay(3);
+    // uint8_t buttons = 0x80;
+    // buttons |= (digitalRead(P_VOL_UP) & 0x01)   << VOL_UP;
+    // buttons |= (digitalRead(P_VOL_DOWN) & 0x01) << VOL_DOWN;
+    // buttons |= (digitalRead(P_PAUSE) & 0x01)    << PAUSE;
+    // buttons |= (digitalRead(P_BACK) & 0x01)     << BACK;
+    // buttons |= (digitalRead(P_FWRD) & 0x01)     << FWRD;
+    // Serial.print(buttons);
 
 }
 
@@ -110,17 +111,21 @@ void loop() {
     // wdt_disable();
     
     // ear sense measurement
-    digitalWrite(P_OPTO_LDR_EN, HIGH);
-    uint8_t dark_ear_sense = analogRead(P_OPTO_OUT) >> 1;
-    digitalWrite(P_OPTO_LED_EN, HIGH);
-    delay(100);
-    uint8_t bright_ear_sense = analogRead(P_OPTO_OUT) >> 1;
-    digitalWrite(P_OPTO_LED_EN, LOW);
-    digitalWrite(P_OPTO_LDR_EN, LOW);
+    // digitalWrite(P_OPTO_LDR_EN, HIGH);
+    // uint8_t dark_ear_sense = analogRead(P_OPTO_OUT) >> 1;
+    // digitalWrite(P_OPTO_LED_EN, HIGH);
+    // delay(100);
+    // uint8_t bright_ear_sense = analogRead(P_OPTO_OUT) >> 1;
+    // digitalWrite(P_OPTO_LED_EN, LOW);
+    // digitalWrite(P_OPTO_LDR_EN, LOW);
 
     // transmit over uart
-    Serial.print(dark_ear_sense);
-    Serial.print(bright_ear_sense);
+    // Serial.print(dark_ear_sense);
+    // Serial.print(bright_ear_sense);
+    Serial.print(0xFF);
+    // Serial.print(0x55);
+    // Serial.print(0xAA);
+    // Serial.print(0x00);
 
     // start / reset WDT
     // wdt_enable(WDTO_120MS);
@@ -132,6 +137,6 @@ void loop() {
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     // sleep_cpu();
 
-    delay(500);
+    delay(2000);
 }
 
