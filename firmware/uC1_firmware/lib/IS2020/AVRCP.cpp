@@ -204,6 +204,7 @@ uint8_t  IS2020::avrcpAbortContinuing(uint8_t deviceId, uint8_t pdu) {
 uint8_t  IS2020::avrcpSetAbsoluteVolume(uint8_t deviceId, uint8_t volume) {
   IS2020::getNextEventFromBt();
   if (DEBUG_AVRCP) DBG_AVRCP(F("AVRCP_Set_Absolute_Volume\n"));
+  this->volume[deviceId] = volume;
   uint8_t data[5] = {AVRCP_SET_ABSOLUTE_VOLUME, //1
                      0x00, //2
                      0x00, 0x01,

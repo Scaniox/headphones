@@ -125,6 +125,7 @@ class IS2020
     int     btmUartVersion = 0;
     int     btmFwVersion = 0;
     uint8_t linkStatus[7] = {0, 0, 0, 0, 0, 0, 0};
+    uint8_t volume[2] = {0, 0};
 
     uint8_t btAddress[8][6] = {
       {0, 0, 0, 0, 0, 0},
@@ -296,7 +297,7 @@ class IS2020
     uint8_t sendATCPB(uint8_t deviceId, char *  data);
     uint8_t readPhonebook(uint8_t deviceId, char * text);
 #endif
-  private:
+  //private:
     void decodeEvent(uint8_t Event);
     void decodeCommand(uint8_t cmd);
     void decodeCommandInEvents(uint8_t cmd);

@@ -15,7 +15,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // settings
-#define VOL_MAX 100
+#define VOL_MAX 127
 #define POWER_ANIM_BLINK_TIME 150
 #define PAIRING_ANIM_BLINK_TIME 300
 

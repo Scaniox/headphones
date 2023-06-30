@@ -25,7 +25,6 @@ ANC_MODE anc_mode = ANC;
 bool charging = false;
 bool devices_connected[] = {true, false};
 uint8_t current_device = 0;
-volatile uint8_t volume = 100;
 
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
@@ -184,6 +183,7 @@ void power_on() {
     as3435_R.pbo_mode();
 
     bm83.resetModule();
+    // bm83.enableAllSettingEvent();
     // delay(1000);
     // digitalWrite(PIN_BM83_MFB, HIGH);
     // delay(1000);
@@ -226,7 +226,6 @@ void send_full_status() {
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
     Serial.printf("devices_connected: {%i, %i}\n", devices_connected[0], devices_connected[1]);
     Serial.printf("current_device: %i\n", current_device);
-    Serial.printf("volume: %i\n", volume);
 
     Serial.printf("power_button_pressed_start_time: %i\n", power_button_pressed_start_time);
     Serial.printf("power_button_pressed: %i\n",power_button_pressed);
@@ -253,8 +252,9 @@ void debug_parse(String s) {
         Serial.printf("module state: %s\n", bm83.moduleState().c_str());
         Serial.printf("bt state: %s\n", bm83.btStatus().c_str());
 
-        for(int dev_id = 0; dev_id < 2; dev_id++) {
+        for (int dev_id = 0; dev_id < 2; dev_id++) {
             Serial.printf("device: %i\n", dev_id);
+            Serial.printf("volume: %i/127\n", bm83.volume[dev_id]);
             Serial.printf("music status: %s\n", bm83.musicStatus(dev_id).c_str());
             Serial.printf("connection status: %s\n", bm83.connectionStatus(dev_id).c_str());
             Serial.printf("stream status: %s\n", bm83.streamStatus(dev_id).c_str());
@@ -281,18 +281,15 @@ void bm83_serial_bridge() {
     // rolling 24 (incl null) char buffer
     char in_buff[24] = "test  test  test  test ";
 
-    while (true)
-    {
+    while (true) {
         // PC to BM83
-        if (Serial.available())
-        {
+        if (Serial.available()) {
             char c = Serial.read();
             // process input for "mcu_serial_bridge_exit"
             strcpy(in_buff, in_buff + 1);
             strncat(in_buff, &c, 1);
 
-            if (strcmp(in_buff, "mcu_serial_bridge_exit\n") == 0)
-            {
+            if (strcmp(in_buff, "mcu_serial_bridge_exit\n") == 0) {
                 Serial.printf("exiting serial bridge mode\n");
                 break;
             }
@@ -302,14 +299,20 @@ void bm83_serial_bridge() {
         }
 
         // bm83 to PC
-        if (Serial1.available())
-        {
+        if (Serial1.available()) {
             Serial.write(Serial1.read());
         }
     }
 
     digitalWrite(PIN_BM83_PROG_EN, HIGH);
 }
+/******************************************************************************/
+// callbacks
+/******************************************************************************/
+
+
+
+
 
 
 /******************************************************************************/
@@ -383,14 +386,14 @@ void right_button_press_handler(char right_side_data) {
         // button press
         if (right_side_data & (1 << VOL_UP)) {
             // increase volume
-            volume = min((volume + 10), VOL_MAX);
+            uint8_t volume = min((bm83.volume[current_device] + 10), VOL_MAX);
             bm83.avrcpSetAbsoluteVolume(current_device, volume);
             Serial.println("VOL_UP");
         }
 
         if (right_side_data & (1 << VOL_DOWN)) {
             // decrease volume
-            volume = max((volume - 10), 0);
+            uint8_t volume = max((bm83.volume[current_device] - 10), 0);
             bm83.avrcpSetAbsoluteVolume(current_device, volume);
             Serial.println("VOL_DOWN");
         }
@@ -415,18 +418,18 @@ void right_button_press_handler(char right_side_data) {
 void SERCOM2_Handler() {
     right_serial.IrqHandler();
     if (right_serial.available()) {
-        Serial.printf("right side data: 0x%x\n", right_serial.read());
-    //     // determine data type:
-    //     // button presses
-    //     if (right_serial.peek() && 0x80) {
-    //         right_button_press_handler(right_serial.read());
-    //     }
+        // Serial.printf("right side data: 0x%x\n", right_serial.read());
+        // determine data type:
+        // button presses
+        if (right_serial.peek() & 0x80) {
+            right_button_press_handler(right_serial.read());
+        }
 
-    //     // ear sense data ( must be 2 bytes)
-    //     else if (right_serial.available() >= 2) {
-    //         ear_R_dark_reading = right_serial.read();
-    //         ear_R_light_reading = right_serial.read();
-    //     }
+        // ear sense data ( must be 2 bytes)
+        else if (right_serial.available() >= 2) {
+            ear_R_dark_reading = right_serial.read();
+            ear_R_light_reading = right_serial.read();
+        }
     }
 }
 
@@ -553,8 +556,9 @@ void loop() {
         default:
             break;
     }
-
-    bm83.getNextEventFromBt();
+    while(bm83.btSerial -> available() > 3) {
+        bm83.getNextEventFromBt();
+    }
 
     // process debug serial
     if (debug_serial) {

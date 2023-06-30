@@ -1853,6 +1853,7 @@ uint8_t IS2020::getNextEventFromBt() {
             break;
           case EVT_REPORT_AVRCP_ABS_VOL_CTRL:
             {
+              volume[event[1]] = event[2];
             }
             break;
           case EVT_Report_Voice_Prompt_Status:
