@@ -218,34 +218,34 @@ uint8_t  IS2020::eventMaskSetting() {
 
 uint8_t  IS2020::musicControl(uint8_t deviceId, uint8_t action) {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("MusicControl :"));
+  DBG(F("MusicControl :"));
   switch (action) {
     case 0x00:
-      if (DEBUG) DBG(F("STOP_FFW"));
+      DBG(F("STOP_FFW"));
       break;
     case 0x01:
-      if (DEBUG) DBG(F("FFW"));
+      DBG(F("FFW"));
       break;
     case 0x02:
-      if (DEBUG) DBG(F("REPFFW"));
+      DBG(F("REPFFW"));
       break;
     case 0x03:
-      if (DEBUG) DBG(F("RWD"));
+      DBG(F("RWD"));
       break;
     case 0x04:
-      if (DEBUG) DBG(F("REPRWD"));
+      DBG(F("REPRWD"));
       break;
     case 0x05:
-      if (DEBUG) DBG(F("PLAY"));
+      DBG(F("PLAY"));
       break;
     case 0x06:
-      if (DEBUG) DBG(F("PAUSE"));
+      DBG(F("PAUSE"));
       break;
     case 0x07:
-      if (DEBUG) DBG(F("TOGLE_PLAY_PAUSE"));
+      DBG(F("TOGLE_PLAY_PAUSE"));
       break;
     case 0x08:
-      if (DEBUG) DBG(F("STOP"));
+      DBG(F("STOP"));
       break;
   }
   DBG("\n");
@@ -266,7 +266,7 @@ uint8_t  IS2020::musicControl(uint8_t deviceId, uint8_t action) {
 */
 uint8_t  IS2020::changeDeviceName(String name) {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Change Device Name\n"));
+  DBG(F("Change Device Name\n"));
   IS2020::sendPacketString(CMD_Change_Device_Name, name);
   return checkResponce(EVT_Command_ACK);
 }
@@ -283,7 +283,7 @@ uint8_t  IS2020::changeDeviceName(String name) {
 */
 uint8_t  IS2020::changePinCode() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Change PIN Code\n"));
+  DBG(F("Change PIN Code\n"));
   return checkResponce(EVT_Command_ACK);
 }
 /*
@@ -306,7 +306,7 @@ uint8_t  IS2020::changePinCode() {
 */
 uint8_t  IS2020::btmParameterSetting() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("BTM Parameter Setting\n"));
+  DBG(F("BTM Parameter Setting\n"));
   return checkResponce(EVT_Command_ACK);
 }
 /*
@@ -338,7 +338,7 @@ uint8_t  IS2020::readBtmVersion() {
 uint8_t  IS2020::getPbByAtCmd(uint8_t deviceId)
 {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Get PB By AT Cmd\n"));
+  DBG(F("Get PB By AT Cmd\n"));
   IS2020::sendPacketInt(CMD_Get_PB_By_AT_Cmd, deviceId);
   return checkResponce(EVT_Command_ACK);
   //  if (checkResponce(EVT_Command_ACK))
@@ -369,7 +369,7 @@ uint8_t IS2020::vendorAtCommand(uint8_t deviceId, char *  data) {
     delay(1);
     timeout--;
   }
-  if (DEBUG) DBG(F("Vendor_AT_Command\n"));
+  DBG(F("Vendor_AT_Command\n"));
   allowedSendATcommands=0;
   IS2020::sendPacketArrayChar(strlen(data) + 2  , CMD_Vendor_AT_Command, deviceId, data);
   return checkResponce(EVT_Command_ACK);
@@ -381,7 +381,7 @@ uint8_t IS2020::sendATCPB(uint8_t deviceId, char *  data) {
   char tmp[4+strlen(data)];
   strcpy(tmp,ATCommandPB);
   strcat(tmp,data);
-  IS2020::vendorAtCommand(deviceId, tmp);
+  return IS2020::vendorAtCommand(deviceId, tmp);
 }
 
 #endif
@@ -405,10 +405,10 @@ uint8_t IS2020::sendATCPB(uint8_t deviceId, char *  data) {
 */
 uint8_t  IS2020::avrcpGroupNavigation(uint8_t deviceId, uint8_t direction) {
   IS2020::getNextEventFromBt();
-  //if (DEBUG) DBG(F("AVRCP_Group_Navigation\n"));
+  //DBG(F("AVRCP_Group_Navigation\n"));
   uint8_t data[1] = {direction};
   IS2020::sendPacketArrayInt(0x03, CMD_AVRCP_Group_Navigation, deviceId, data);
-  //return checkResponce(EVT_Command_ACK);
+  return checkResponce(EVT_Command_ACK);
 }
 
 uint8_t IS2020::avrcpNextGroup(uint8_t deviceId) {
@@ -416,7 +416,7 @@ uint8_t IS2020::avrcpNextGroup(uint8_t deviceId) {
 }
 
 uint8_t IS2020::avrcpPreviousGroup(uint8_t deviceId) {
-  IS2020::avrcpGroupNavigation(deviceId, CMD_AVRCP_Group_NavigationPrevious);
+  return IS2020::avrcpGroupNavigation(deviceId, CMD_AVRCP_Group_NavigationPrevious);
 }
 
 /*
@@ -432,7 +432,7 @@ uint8_t IS2020::avrcpPreviousGroup(uint8_t deviceId) {
 */
 uint8_t  IS2020::readLinkStatus() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Read_Link_Status\n"));
+  DBG(F("Read_Link_Status\n"));
   IS2020::sendPacketInt(CMD_Read_Link_Status, DUMMYBYTE);
   return checkResponce(EVT_Command_ACK);
   //  if (checkResponce(EVT_Command_ACK)) {
@@ -475,7 +475,7 @@ uint8_t  IS2020::readLinkStatus() {
 */
 uint8_t  IS2020::readPairedDeviceRecord() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Read_Paired_Device_Record\n"));
+  DBG(F("Read_Paired_Device_Record\n"));
   IS2020::sendPacketInt(CMD_Read_Paired_Device_Record, DUMMYBYTE);
   return checkResponce(EVT_Command_ACK);
   //    if (checkResponce(EVT_Command_ACK))
@@ -495,7 +495,7 @@ uint8_t  IS2020::readPairedDeviceRecord() {
 */
 uint8_t  IS2020::readLocalBtAddress() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Read_Local_BT_Address\n"));
+  DBG(F("Read_Local_BT_Address\n"));
   IS2020::sendPacketInt(CMD_Read_Local_BT_Address, DUMMYBYTE);
   return checkResponce(EVT_Command_ACK);
   //  if (checkResponce(EVT_Command_ACK))
@@ -514,7 +514,7 @@ uint8_t  IS2020::readLocalBtAddress() {
 */
 uint8_t  IS2020::readLocalDeviceName() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Read_Local_Device_Name\n"));
+  DBG(F("Read_Local_Device_Name\n"));
   IS2020::sendPacketInt(CMD_Read_Local_Device_Name, DUMMYBYTE);
   return checkResponce(EVT_Command_ACK);
   //  if (checkResponce(EVT_Command_ACK))
@@ -537,7 +537,7 @@ uint8_t  IS2020::readLocalDeviceName() {
 */
 uint8_t  IS2020::setAccessPbMethod() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Set_Access_PB_Method\n"));
+  DBG(F("Set_Access_PB_Method\n"));
   IS2020::sendPacketInt(CMD_Set_Access_PB_Method, B10000000);
   return checkResponce(EVT_Command_ACK);
 }
@@ -574,7 +574,7 @@ uint8_t  IS2020::setAccessPbMethod() {
 */
 uint8_t  IS2020::sendSppIapData() {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Send_SPP_iAP_Data\n"));
+  DBG(F("Send_SPP_iAP_Data\n"));
   return checkResponce(EVT_Command_ACK);
 }
 /*
@@ -674,7 +674,7 @@ uint8_t  IS2020::btmUtilityFunction() {
   
 
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("BTM_Utility_Function\n"));
+  DBG(F("BTM_Utility_Function\n"));
   return checkResponce(EVT_Command_ACK);
 }
 /*
@@ -691,7 +691,7 @@ uint8_t  IS2020::btmUtilityFunction() {
 */
 uint8_t  IS2020::eventAck(uint8_t eventId) {
   //IS2020::getNextEventFromBt();
-  //if (DEBUG) DBG(F("Event ACK: "));decodeEvent(eventId);
+  //DBG(F("Event ACK: "));decodeEvent(eventId);
   IS2020::sendPacketInt(CMD_Event_ACK, eventId);
   return checkResponce(EVT_Command_ACK);
 }
@@ -715,22 +715,22 @@ uint8_t  IS2020::eventAck(uint8_t eventId) {
 */
 uint8_t  IS2020::additionalProfilesLinkSetup(uint8_t deviceId, uint8_t profile) {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("Additional Profiles Link Setup\n"));
+  DBG(F("Additional Profiles Link Setup\n"));
   uint8_t data[1] = {profile};
   IS2020::sendPacketArrayInt(0x03, CMD_Additional_Profiles_Link_Setup, deviceId, data);
   return checkResponce(EVT_Command_ACK);
 }
 
 uint8_t  IS2020::additionalProfilesLinkSetupHfHs(uint8_t deviceId) {
-  IS2020::additionalProfilesLinkSetup(deviceId, 0x00);
+  return IS2020::additionalProfilesLinkSetup(deviceId, 0x00);
 }
 
 uint8_t  IS2020::additionalProfilesLinkSetupA2DP(uint8_t deviceId) {
-  IS2020::additionalProfilesLinkSetup(deviceId, 0x01);
+  return IS2020::additionalProfilesLinkSetup(deviceId, 0x01);
 }
 
 uint8_t  IS2020::additionalProfilesLinkSetupiAPSpp(uint8_t deviceId) {
-  IS2020::additionalProfilesLinkSetup(deviceId, 0x02);
+  return IS2020::additionalProfilesLinkSetup(deviceId, 0x02);
 }
 /*
   Command Format:  Command Command ID  Command Parameters  Return Event
@@ -756,7 +756,7 @@ uint8_t  IS2020::additionalProfilesLinkSetupiAPSpp(uint8_t deviceId) {
 */
 uint8_t  IS2020::readLinkedDeviceInformation(uint8_t deviceId, uint8_t query) {
   IS2020::getNextEventFromBt();
-  if (DEBUG) DBG(F("readLinkedDeviceInformation ")); IS2020::DBG(String(deviceId));
+  DBG(F("readLinkedDeviceInformation ")); IS2020::DBG(String(deviceId));
   uint8_t data[1] = {query};
   IS2020::sendPacketArrayInt(0x03, CMD_Read_Linked_Device_Information, deviceId, data);
   return checkResponce(EVT_Command_ACK);
@@ -801,14 +801,14 @@ uint8_t  IS2020::readLinkedDeviceInformation(uint8_t deviceId, uint8_t query) {
 */
 uint8_t  IS2020::profileLinkBack(uint8_t type, uint8_t deviceId, uint8_t profile) {
   IS2020::getNextEventFromBt();
-  //  if (DEBUG) DBG(F("Trying to connect device id: "));DBG(String(deviceId));if (DEBUG) DBG(F(" profile: "));DBG(String(profile));
+  //  DBG(F("Trying to connect device id: "));DBG(String(deviceId));DBG(F(" profile: "));DBG(String(profile));
   uint8_t data[2] = {deviceId, profile};
   IS2020::sendPacketArrayInt(0x03, CMD_Profile_Link_Back, type, data);
   return checkResponce(EVT_Command_ACK);
 }
 
 uint8_t IS2020::connectLastDevice() {
-  IS2020::profileLinkBack(0, 0, 7);
+  return IS2020::profileLinkBack(0, 0, 7);
 }
 
 /*
@@ -1214,112 +1214,112 @@ uint8_t  IS2020::setOverallGain() {
 void IS2020::decodeCommand(uint8_t cmd) {
   switch (cmd) {
     case CMD_Make_Call:
-      if (DEBUG) DBG(F("Make Call"));
+      DBG(F("Make Call"));
       break;
     case CMD_Make_Extension_Call:
-      if (DEBUG) DBG(F("Make Extension Call"));
+      DBG(F("Make Extension Call"));
       break;
     case CMD_MMI_Action:
-      if (DEBUG) DBG(F("MMI Action"));
+      DBG(F("MMI Action"));
       break;
     case CMD_Event_Mask_Setting:
-      if (DEBUG) DBG(F("Event Mask Setting"));
+      DBG(F("Event Mask Setting"));
       break;
     case CMD_Music_Control:
-      if (DEBUG) DBG(F("Music Control"));
+      DBG(F("Music Control"));
       break;
     case CMD_Change_Device_Name:
-      if (DEBUG) DBG(F("Change Device Name"));
+      DBG(F("Change Device Name"));
       break;
     case CMD_Change_PIN_Code:
-      if (DEBUG) DBG(F("Change PIN Code"));
+      DBG(F("Change PIN Code"));
       break;
     case CMD_BTM_Parameter_Setting:
-      if (DEBUG) DBG(F("BTM_Parameter_Setting"));
+      DBG(F("BTM_Parameter_Setting"));
       break;
     case CMD_Read_BTM_Version:
-      if (DEBUG) DBG(F("Read_BTM_Version"));
+      DBG(F("Read_BTM_Version"));
       break;
     case CMD_Get_PB_By_AT_Cmd:
-      if (DEBUG) DBG(F("Get PB By AT Cmd"));
+      DBG(F("Get PB By AT Cmd"));
       break;
     case CMD_Vendor_AT_Command:
-      if (DEBUG) DBG(F("Vendor AT Command"));
+      DBG(F("Vendor AT Command"));
       break;
     case CMD_AVRCP_Specific_Cmd:
-      if (DEBUG) DBG(F("AVRCP Specific Cmd"));
+      DBG(F("AVRCP Specific Cmd"));
       break;
     case CMD_AVRCP_Group_Navigation:
-      if (DEBUG) DBG(F("AVRCP Group Navigation"));
+      DBG(F("AVRCP Group Navigation"));
       break;
     case CMD_Read_Link_Status:
-      if (DEBUG) DBG(F("Read Link Status"));
+      DBG(F("Read Link Status"));
       break;
     case CMD_Read_Paired_Device_Record:
-      if (DEBUG) DBG(F("Read Paired Device Record"));
+      DBG(F("Read Paired Device Record"));
       break;
     case CMD_Read_Local_BT_Address:
-      if (DEBUG) DBG(F("Read Local BT Address"));
+      DBG(F("Read Local BT Address"));
       break;
     case CMD_Read_Local_Device_Name:
-      if (DEBUG) DBG(F("Read Local Device Name"));
+      DBG(F("Read Local Device Name"));
       break;
     case CMD_Set_Access_PB_Method:
-      if (DEBUG) DBG(F("Set Access PB Method"));
+      DBG(F("Set Access PB Method"));
       break;
     case CMD_Send_SPP_iAP_Data:
-      if (DEBUG) DBG(F("Send SPP iAP Data"));
+      DBG(F("Send SPP iAP Data"));
       break;
     case CMD_BTM_Utility_Function:
-      if (DEBUG) DBG(F("BTM Utility Function"));
+      DBG(F("BTM Utility Function"));
       break;
     case CMD_Event_ACK:
-      if (DEBUG) DBG(F("Event ACK"));
+      DBG(F("Event ACK"));
       break;
     case CMD_Additional_Profiles_Link_Setup:
-      if (DEBUG) DBG(F("Additional Profiles Link Setup"));
+      DBG(F("Additional Profiles Link Setup"));
       break;
     case CMD_Read_Linked_Device_Information:
-      if (DEBUG) DBG(F("Read Linked Device Information"));
+      DBG(F("Read Linked Device Information"));
       break;
     case CMD_Profile_Link_Back:
-      if (DEBUG) DBG(F("Profile Link Back"));
+      DBG(F("Profile Link Back"));
       break;
     case CMD_Disconnect:
-      if (DEBUG) DBG(F("Disconnect"));
+      DBG(F("Disconnect"));
       break;
     case CMD_MCU_Status_Indication:
-      if (DEBUG) DBG(F("MCU Status Indication"));
+      DBG(F("MCU Status Indication"));
       break;
     case CMD_User_Confirm_SPP_Req_Reply:
-      if (DEBUG) DBG(F("User Confirm SPP Req Reply"));
+      DBG(F("User Confirm SPP Req Reply"));
       break;
     case CMD_Set_HF_Gain_Level:
-      if (DEBUG) DBG(F("Set HF Gain Level"));
+      DBG(F("Set HF Gain Level"));
       break;
     case CMD_EQ_Mode_Setting:
-      if (DEBUG) DBG(F("EQ Mode Setting"));
+      DBG(F("EQ Mode Setting"));
       break;
     case CMD_DSP_NR_CTRL:
-      if (DEBUG) DBG(F("DSP NR CTRL"));
+      DBG(F("DSP NR CTRL"));
       break;
     case CMD_GPIO_Control:
-      if (DEBUG) DBG(F("GPIO Control"));
+      DBG(F("GPIO Control"));
       break;
     case CMD_MCU_UART_Rx_Buffer_Size:
-      if (DEBUG) DBG(F("MCU UART Rx Buffer Size"));
+      DBG(F("MCU UART Rx Buffer Size"));
       break;
     case CMD_Voice_Prompt_Cmd:
-      if (DEBUG) DBG(F("Voice Prompt Cmd"));
+      DBG(F("Voice Prompt Cmd"));
       break;
     case CMD_MAP_REQUEST:
-      if (DEBUG) DBG(F("MAP REQUEST"));
+      DBG(F("MAP REQUEST"));
       break;
     case CMD_Security_Bonding_Req:
-      if (DEBUG) DBG(F("Security Bonding Req"));
+      DBG(F("Security Bonding Req"));
       break;
     case CMD_Set_Overall_Gain:
-      if (DEBUG) DBG(F("Set Overall Gain"));
+      DBG(F("Set Overall Gain"));
       break;
     default:
       DBG("Unknown CMD command " + String(cmd, HEX));

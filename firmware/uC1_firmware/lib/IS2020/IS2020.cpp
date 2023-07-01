@@ -62,7 +62,7 @@ void IS2020::resetHigh() {
 }
 
 void IS2020::resetModule() {
-  if (DEBUG) DBG(F("reseting module\n"));
+  DBG(F("reseting module\n"));
   resetLow();
   delayMicroseconds(1000);
   resetHigh();
@@ -281,6 +281,9 @@ String IS2020::musicStatus(uint8_t deviceId) {
     case 0x08:
       return (F("WAIT_TO_PAUSE"));
       break;
+    default:
+      return (F("ERROR"));
+      break;
   }
 }
 
@@ -333,6 +336,9 @@ String IS2020::moduleState() {
       break;
     case 0x06:
       return (F("Connected state with HP and A2DP profile connected"));
+      break;
+    default:
+      return (F("unknown module status"));
       break;
   }
 }
