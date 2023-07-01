@@ -3,9 +3,9 @@
 #ifndef IS2020_h
 #define IS2020_h
 
-#define DEBUG 0
-#define DEBUG_AVRCP 0
-#define DEBUG_EVENTS 0
+#define DEBUG 1
+#define DEBUG_AVRCP 1
+#define DEBUG_EVENTS 1
 #define PHONEBOOKSUPPORT
 
 #include <Arduino.h>
@@ -92,6 +92,7 @@ class IS2020
     uint8_t  mapRequest();
     uint8_t  securityBondingReq();
     uint8_t  setOverallGain();
+    uint8_t  report_Battery_Capacity(uint8_t bat_level);
     int      serialAvailable();
     int      serialRead();
 
@@ -116,7 +117,7 @@ class IS2020
     uint8_t hfGainLevel[2] = {0, 0}; // this can be only 0x0F max, so we can bitbang device zero and one to one byte if we got to low mem state ...
     uint8_t eqMode = 0;
     uint8_t pbapAccessFinish = 0;
-    String deviceName[2];
+    String  deviceName[2];
     uint8_t deviceInBandRingtone[2] = {0, 0}; //remake this for some bit masked variable .... this is just 0 or 1 for each device ..
     uint8_t deviceIsIap[2] = {0, 0};
     uint8_t deviceSupportAvrcpV13[2] = {0, 0} ; //reply if remote device support AVRCP v1.3

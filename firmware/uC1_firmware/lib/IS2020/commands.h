@@ -42,6 +42,7 @@
 #define CMD_MAP_REQUEST 0x21
 #define CMD_Security_Bonding_Req  0x22
 #define CMD_Set_Overall_Gain  0x23
+#define CMD_Report_Battery_Capacity 0x27
 
 #define CRLDI_query_device_name 0x00
 #define CRLDI_query_in_band_ringtone_status 0x01

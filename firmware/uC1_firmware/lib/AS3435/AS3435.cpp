@@ -61,7 +61,6 @@ bool AS3435::begin(uint8_t i2caddr, TwoWire* theWire,
     // configure HP driver + I2C mode
     writeRegister(AS3435_MODE_2, 0x03);
 
-
     return true;
 }
 
@@ -110,4 +109,10 @@ void AS3435::pbo_mode() {
     current_state &= ~(_BV(2) | _BV(3));
     current_state |= _BV(2);
     writeRegister(AS3435_EVAL, current_state);
+}
+
+void AS3435::set_output_driver_en(bool state) {
+    uint8_t current_val = readRegister8(AS3435_MODE_2);
+    uint8_t new_val = (state) ? current_val | _BV(1) : current_val & ~_BV(1);
+    writeRegister(AS3435_MODE_2, new_val); 
 }

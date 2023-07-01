@@ -167,6 +167,10 @@ void switch_device(uint8_t device) {
 
 // power
 void power_off() {
+    as3435_L.set_output_driver_en(0);
+    delay(3);
+    as3435_R.set_output_driver_en(0);
+
     current_state = STATE_OFF;
     digitalWrite(PIN_3V3_EN, LOW);
 
@@ -186,6 +190,7 @@ void power_on() {
     as3435_R.begin(AS3435_I2CADDR_R);
     as3435_R.pbo_mode();
 
+
     bm83.resetModule();
 
     // bm83.btmUtilityFunction() isn't implemented
@@ -196,6 +201,7 @@ void power_on() {
     // delay(1000);
     // digitalWrite(PIN_BM83_MFB, HIGH);
     // delay(1000);
+    delay(500);
 
     // default leds
     set_ANC_indicator(0);
@@ -203,7 +209,6 @@ void power_on() {
 
     digitalWrite(PIN_LED, HIGH);
     Serial.println("powering on");
-
 }
 
 void start_pairing() {
@@ -230,9 +235,13 @@ void send_full_status() {
     Serial.printf("=================CURRENT STATUS=================\n");
     Serial.printf("current_state: %i\n", current_state);
     Serial.printf("anc_mode: %i\n", anc_mode);
+
     Serial.printf("charging: %i\n", digitalRead(PIN_CHRG_STAT));
+    bm83.report_Battery_Capacity(constrain( (int)fuel_guage.getSoC(), 0, 100));
     Serial.printf("bat soc: %f\n", fuel_guage.getSoC());
+    Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
+
     Serial.printf("devices_connected: {%i, %i}\n", devices_connected[0], devices_connected[1]);
     Serial.printf("current_device: %i\n", current_device);
 
@@ -318,7 +327,7 @@ void bm83_serial_bridge() {
 /******************************************************************************/
 // callbacks
 /******************************************************************************/
-void exit_pairing() {
+void pairing_finished() {
     current_state = STATE_ON;
     start_animation(ANIM_NONE);
 }

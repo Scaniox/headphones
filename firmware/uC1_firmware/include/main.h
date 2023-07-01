@@ -19,10 +19,6 @@
 #define POWER_ANIM_BLINK_TIME 300
 #define PAIRING_ANIM_BLINK_TIME 300
 
-#define DEBUG 1
-#define DEBUG_AVRCP 1
-#define DEBUG_EVENTS 1
-
 // button timings
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500

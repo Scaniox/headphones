@@ -671,8 +671,6 @@ uint8_t  IS2020::sendSppIapData() {
 
 */
 uint8_t  IS2020::btmUtilityFunction() {
-  
-
   IS2020::getNextEventFromBt();
   DBG(F("BTM_Utility_Function\n"));
   return checkResponce(EVT_Command_ACK);
@@ -1208,6 +1206,17 @@ uint8_t  IS2020::securityBondingReq() {
 */
 uint8_t  IS2020::setOverallGain() {
   IS2020::getNextEventFromBt();
+  return checkResponce(EVT_Command_ACK);
+}
+
+/*
+ This command is used to inform BTM about the system battery level (unit in percentage).
+ parameters:
+ bat_level - value from 0 - 100 (percentage) of remaining battery capacity
+*/
+uint8_t  IS2020::report_Battery_Capacity(uint8_t bat_level) {
+  IS2020::getNextEventFromBt();
+  IS2020::sendPacketInt(CMD_Report_Battery_Capacity, bat_level);
   return checkResponce(EVT_Command_ACK);
 }
 

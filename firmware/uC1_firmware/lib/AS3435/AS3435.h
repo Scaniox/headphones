@@ -58,6 +58,7 @@ public:
     void anc_mode();
     void monitor_mode();
     void pbo_mode();
+    void set_output_driver_en(bool state);
     // bypass mode is done by turning off the chip's power domain
 
 private:
