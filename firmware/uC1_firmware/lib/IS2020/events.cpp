@@ -8,7 +8,7 @@
 uint8_t IS2020::getNextEventFromBt() {
   //delay(100);
   if (btSerial -> available() > 3) { //min is 3, 0x55 + packet size, then we can read in while loop
-    //if (DEBUG_EVENTS) DBG_EVENTS(F("Get next Event from BT\n"));
+    //DBG_EVENTS(F("Get next Event from BT\n"));
     if (btSerial -> read() == 0xAA) { //start of event
 
       uint16_t packetSize = (btSerial -> read() << 8) | (btSerial -> read() & 0xff);
@@ -19,7 +19,7 @@ uint8_t IS2020::getNextEventFromBt() {
               event[i] = btSerial -> read();
             }
       */
-      //if (DEBUG_EVENTS) DBG_EVENTS(F("Packet size: "));DBG_EVENTS(String(packetSize,DEC));if (DEBUG_EVENTS) DBG_EVENTS(F("\n"));
+      //DBG_EVENTS(F("Packet size: "));DBG_EVENTS(String(packetSize,DEC));DBG_EVENTS(F("\n"));
       uint16_t i = 0;
       while (i < packetSize + 1 ) {
         //read only if buffer has some data
@@ -61,29 +61,29 @@ uint8_t IS2020::getNextEventFromBt() {
             {
               switch (event[2]) {
                 case 0x00:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("Command complete"));// : BTM can handle this command.");
+                  DBG_EVENTS(F("Command complete"));// : BTM can handle this command.");
                   break;
                 case 0x01:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("Command disallowed"));// : BTM can not handle this command.");
+                  DBG_EVENTS(F("Command disallowed"));// : BTM can not handle this command.");
                   if (event[1] == CMD_Vendor_AT_Command)  allowedSendATcommands=1;
                   break;
                 case 0x02:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("Unknow command"));
+                  DBG_EVENTS(F("Unknow command"));
                   break;
                 case 0x03:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("Parameters error"));
+                  DBG_EVENTS(F("Parameters error"));
                   break;
                 case 0x04:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("BTM is busy"));
+                  DBG_EVENTS(F("BTM is busy"));
                   break;
                 case 0x05:
-                  if (DEBUG_EVENTS) DBG_EVENTS(F("BTM memory is full"));
+                  DBG_EVENTS(F("BTM memory is full"));
                   break;
               }
-              if (DEBUG_EVENTS) DBG_EVENTS(F(": "));
+              DBG_EVENTS(F(": "));
               decodeCommandInEvents(event[1]);
               //DBG_EVENTS(" "+String(event[1], HEX));
-              if (DEBUG_EVENTS) DBG_EVENTS(F("\n"));
+              DBG_EVENTS(F("\n"));
             }
             break;
           /*
@@ -152,99 +152,99 @@ uint8_t IS2020::getNextEventFromBt() {
               switch (btmState) {
                 case BTM_STATE_power_OFF:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("Power OFF."));
+                    DBG_EVENTS(F("Power OFF."));
                   }
                   break;
                 case BTM_STATE_discoverable_mode:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("Discoverable mode."));
+                    DBG_EVENTS(F("Discoverable mode."));
                   }
                   break;
                 case BTM_STATE_power_ON_state:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("Power ON."));
+                    DBG_EVENTS(F("Power ON."));
                   }
                   break;
                 case BTM_STATE_pairing_successful:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("Pairing successful."));
+                    DBG_EVENTS(F("Pairing successful."));
                   }
                   break;
                 case BTM_STATE_pairing_fail:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("Pairing failed."));
+                    DBG_EVENTS(F("Pairing failed."));
                     //                    Serial.println("Pairing failed, reason: " + event[2]?"timeout":"fail");
                     if (pairingFailReason != event[2]) pairingFailReason = event[2];
                   }
                   break;
                 case BTM_STATE_HF_link_established:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("HF link established."));
+                    DBG_EVENTS(F("HF link established."));
                   }
                   break;
                 case BTM_STATE_A2DP_link_established:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("A2DP link established."));
+                    DBG_EVENTS(F("A2DP link established."));
 
                   }
                   break;
                 case BTM_STATE_HF_link_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("HF link disconnected."));
+                    DBG_EVENTS(F("HF link disconnected."));
                   }
                   break;
                 case BTM_STATE_A2DP_link_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("AD2P link disconnected."));
+                    DBG_EVENTS(F("AD2P link disconnected."));
                   }
                   break;
                 case BTM_STATE_SCO_link_connected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("SCO link connected."));
+                    DBG_EVENTS(F("SCO link connected."));
                   }
                   break;
                 case BTM_STATE_SCO_link_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("SCO link disconnected."));
+                    DBG_EVENTS(F("SCO link disconnected."));
                   }
                   break;
                 case BTM_STATE_AVRCP_link_established:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("AVRCP link established."));
+                    DBG_EVENTS(F("AVRCP link established."));
                   }
                   break;
                 case BTM_STATE_AVRCP_link_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("AVRCP link disconnected."));
+                    DBG_EVENTS(F("AVRCP link disconnected."));
                   }
                   break;
                 case BTM_STATE_SPP_connected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("SSP link connected."));
+                    DBG_EVENTS(F("SSP link connected."));
                   }
                   break;
                 case BTM_STATE_SPP_iAP_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("SCO iAP link connected."));
+                    DBG_EVENTS(F("SCO iAP link connected."));
                   }
                   break;
                 case BTM_STATE_standby:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("BTM standby."));
+                    DBG_EVENTS(F("BTM standby."));
                   }
                   break;
                 case BTM_STATE_iAP_connected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("iAP connected."));
+                    DBG_EVENTS(F("iAP connected."));
                   }
                   break;
                 case BTM_STATE_ACL_disconnected:
                   {
-                    if (DEBUG_EVENTS) DBG_EVENTS(F("ACL disconnected."));
+                    DBG_EVENTS(F("ACL disconnected."));
                   }
                   break;
               }
-              if (DEBUG_EVENTS) DBG_EVENTS(F("\n"));
+              DBG_EVENTS(F("\n"));
               IS2020::readLinkStatus(); //read info about paired devices
               IS2020::btmStatusChanged = 1;
             }
@@ -723,13 +723,13 @@ uint8_t IS2020::getNextEventFromBt() {
           */
           case EVT_Read_Linked_Device_Information_Reply:
             {
-              //if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Linked_Device_Information_Reply\n"));
+              //DBG_EVENTS(F("Read_Linked_Device_Information_Reply\n"));
               IS2020::btmStatusChanged = 1;
               switch (event[2]) { //event[1] is device id
                 case 0x00://reply device name
                   {
                     IS2020::deviceName[event[1]] = ""; //clear stored named
-                    //if (DEBUG_EVENTS) DBG_EVENTS(F("Reply device name\n"));
+                    //DBG_EVENTS(F("Reply device name\n"));
                     //N bytes bluetooth name with NULL terminated. (N <= 249 with NULL terminated)
 
                     for (uint8_t i = 3; i < /*DEVICENAME_LENGHT_SUPPORT + 2*/packetSize - 1; i++) { //event[2] is information type definition, last is checksum
@@ -1576,7 +1576,15 @@ uint8_t IS2020::getNextEventFromBt() {
               uint8_t deviceId = event[1];
               //
               if (event[2] == '+') {
-                if (DEBUG_EVENTS) DBG_EVENTS(F(" [")); for (uint16_t i = 2; i < packetSize; i++) if (DEBUG_EVENTS)Serial.write(event[i]); if (DEBUG_EVENTS) DBG_EVENTS(F("]\n"));
+
+                // debug
+                DBG_EVENTS(F(" ["));
+                if (DEBUG_EVENTS) {
+                  for (uint16_t i = 2; i < packetSize; i++) {
+                    Serial.write(event[i]); 
+                  }
+                }
+                DBG_EVENTS(F("]\n"));
                 switch (event[3]) {
                   case 'C': //command?
                     {
@@ -1798,28 +1806,28 @@ uint8_t IS2020::getNextEventFromBt() {
             break;
           case EVT_Read_Local_BD_Address_Reply:
             {
-              if (DEBUG_EVENTS) DBG_EVENTS(F("Local BT adr: "));
+              DBG_EVENTS(F("Local BT adr: "));
               /*for (uint8_t _byte = 0; _byte < 6; _byte++) {
                 IS2020::moduleBtAddress[5 - _byte] = event[_byte + 1];
                 }*/
               for (uint8_t _byte = 0; _byte < 6; _byte++) {
                 IS2020::moduleBtAddress[_byte] = event[6 - _byte];
                 DBG_EVENTS(String(IS2020::moduleBtAddress[_byte], HEX));
-                if (_byte < 5) if (DEBUG_EVENTS) DBG_EVENTS(F(": "));
+                if (_byte < 5) DBG_EVENTS(F(": "));
               }
-              if (DEBUG_EVENTS) DBG_EVENTS(F("\n"));
+              DBG_EVENTS(F("\n"));
             }
             break;
           case EVT_Read_Local_Device_Name_Reply:
             {
               IS2020::localDeviceName = "";
-              //if (DEBUG_EVENTS) DBG_EVENTS(F("size: "));
+              //DBG_EVENTS(F("size: "));
               //DBG_EVENTS(String(event[1])+"\n");
               for (uint8_t _byte = 0; _byte < event[1]; _byte++) {
                 //Serial3.write(event[_byte+2]);
                 IS2020::localDeviceName += (char)event[_byte + 2];
               }
-              //if (DEBUG_EVENTS) DBG_EVENTS(F("BT name: "));
+              //DBG_EVENTS(F("BT name: "));
               //DBG_EVENTS(LocalDeviceName);
             }
             break;
@@ -1892,142 +1900,142 @@ uint8_t IS2020::getNextEventFromBt() {
 void IS2020::decodeEvent(uint8_t Event) {
   switch (Event) {
     case 0x00:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Command_ACK"));
+      DBG_EVENTS(F("Command_ACK"));
       break;
     case 0x01:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM_Status"));
+      DBG_EVENTS(F("BTM_Status"));
       break;
     case 0x02:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Call_Status"));
+      DBG_EVENTS(F("Call_Status"));
       break;
     case 0x03:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Caller_ID"));
+      DBG_EVENTS(F("Caller_ID"));
       break;
     case 0x04:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("SMS_Received_Indication"));
+      DBG_EVENTS(F("SMS_Received_Indication"));
       break;
     case 0x05:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Missed_Call_Indication"));
+      DBG_EVENTS(F("Missed_Call_Indication"));
       break;
     case 0x06:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Phone_Max_Battery_Level"));
+      DBG_EVENTS(F("Phone_Max_Battery_Level"));
       break;
     case 0x07:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Phone_Current_Battery_Level"));
+      DBG_EVENTS(F("Phone_Current_Battery_Level"));
       break;
     case 0x08:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Roaming_Status"));
+      DBG_EVENTS(F("Roaming_Status"));
       break;
     case 0x09:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Phone_Max_Signal_Strength_Level"));
+      DBG_EVENTS(F("Phone_Max_Signal_Strength_Level"));
       break;
     case 0x0A:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Phone_Current_Signal_Strength_Level"));
+      DBG_EVENTS(F("Phone_Current_Signal_Strength_Level"));
       break;
     case 0x0B:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Phone_Service_Status"));
+      DBG_EVENTS(F("Phone_Service_Status"));
       break;
     case 0x0C:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM_Battery_Status"));
+      DBG_EVENTS(F("BTM_Battery_Status"));
       break;
     case 0x0D:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM_Charging_Status"));
+      DBG_EVENTS(F("BTM_Charging_Status"));
       break;
     case 0x0E:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Reset_To_Default"));
+      DBG_EVENTS(F("Reset_To_Default"));
       break;
     case 0x0F:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_HF_Gain_Level"));
+      DBG_EVENTS(F("Report_HF_Gain_Level"));
       break;
     case 0x10:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("EQ_Mode_Indication"));
+      DBG_EVENTS(F("EQ_Mode_Indication"));
       break;
     case 0x11:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("PBAP_Missed_Call_History"));
+      DBG_EVENTS(F("PBAP_Missed_Call_History"));
       break;
     case 0x12:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("PBAP_Received_Call_History"));
+      DBG_EVENTS(F("PBAP_Received_Call_History"));
       break;
     case 0x13:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("PBAP_Dialed_Call_History"));
+      DBG_EVENTS(F("PBAP_Dialed_Call_History"));
       break;
     case 0x14:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("PBAP_Combine_Call_History"));
+      DBG_EVENTS(F("PBAP_Combine_Call_History"));
       break;
     case 0x15:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Get_PB_By_AT_Cmd_Reply"));
+      DBG_EVENTS(F("Get_PB_By_AT_Cmd_Reply"));
       break;
     case 0x16:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("PBAP_Access_Finish"));
+      DBG_EVENTS(F("PBAP_Access_Finish"));
       break;
     case 0x17:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Linked_Device_Information_Reply"));
+      DBG_EVENTS(F("Read_Linked_Device_Information_Reply"));
       break;
     case 0x18:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_BTM_Version_Reply"));
+      DBG_EVENTS(F("Read_BTM_Version_Reply"));
       break;
     case 0x19:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Call_List_Report"));
+      DBG_EVENTS(F("Call_List_Report"));
       break;
     case 0x1A:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("AVRCP_Specific_Rsp"));
+      DBG_EVENTS(F("AVRCP_Specific_Rsp"));
       break;
     case 0x1B:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM_Utility_Req"));
+      DBG_EVENTS(F("BTM_Utility_Req"));
       break;
     case 0x1C:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Vendor_AT_Cmd_Reply"));
+      DBG_EVENTS(F("Vendor_AT_Cmd_Reply"));
       break;
     case 0x1D:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_Vendor_AT_Event"));
+      DBG_EVENTS(F("Report_Vendor_AT_Event"));
       break;
     case 0x1E:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Link_Status_Reply"));
+      DBG_EVENTS(F("Read_Link_Status_Reply"));
       break;
     case 0x1F:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Paired_Device_Record_Reply"));
+      DBG_EVENTS(F("Read_Paired_Device_Record_Reply"));
       break;
     case 0x20:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Local_BD_Address_Reply"));
+      DBG_EVENTS(F("Read_Local_BD_Address_Reply"));
       break;
     case 0x21:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_Local_Device_Name_Reply"));
+      DBG_EVENTS(F("Read_Local_Device_Name_Reply"));
       break;
     case 0x22:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_SPP_iAP_Data"));
+      DBG_EVENTS(F("Report_SPP_iAP_Data"));
       break;
     case 0x23:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_Link_Back_Status"));
+      DBG_EVENTS(F("Report_Link_Back_Status"));
       break;
     case 0x24:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Ringtone_Finish_Indicate"));
+      DBG_EVENTS(F("Ringtone_Finish_Indicate"));
       break;
     case 0x25:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("User_Confrim_SSP_Req"));
+      DBG_EVENTS(F("User_Confrim_SSP_Req"));
       break;
     case 0x26:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_AVRCP_Vol_Ctrl"));
+      DBG_EVENTS(F("Report_AVRCP_Vol_Ctrl"));
       break;
     case 0x27:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_Input_Signal_Level"));
+      DBG_EVENTS(F("Report_Input_Signal_Level"));
       break;
     case 0x28:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_iAP_Info"));
+      DBG_EVENTS(F("Report_iAP_Info"));
       break;
     case 0x29:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("REPORT_AVRCP_ABS_VOL_CTRL"));
+      DBG_EVENTS(F("REPORT_AVRCP_ABS_VOL_CTRL"));
       break;
     case 0x2A:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_Voice_Prompt_Status"));
+      DBG_EVENTS(F("Report_Voice_Prompt_Status"));
       break;
     case 0x2B:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_MAP_Data"));
+      DBG_EVENTS(F("Report_MAP_Data"));
       break;
     case 0x2C:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Security_Bonding_Res"));
+      DBG_EVENTS(F("Security_Bonding_Res"));
       break;
     case 0x2D:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Report_Type_Codec"));
+      DBG_EVENTS(F("Report_Type_Codec"));
       break;
   }
 }
@@ -2035,112 +2043,112 @@ void IS2020::decodeEvent(uint8_t Event) {
 void IS2020::decodeCommandInEvents(uint8_t cmd) {
   switch (cmd) {
     case CMD_Make_Call:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Make Call"));
+      DBG_EVENTS(F("Make Call"));
       break;
     case CMD_Make_Extension_Call:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Make Extension Call"));
+      DBG_EVENTS(F("Make Extension Call"));
       break;
     case CMD_MMI_Action:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("MMI Action"));
+      DBG_EVENTS(F("MMI Action"));
       break;
     case CMD_Event_Mask_Setting:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Event Mask Setting"));
+      DBG_EVENTS(F("Event Mask Setting"));
       break;
     case CMD_Music_Control:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Music Control"));
+      DBG_EVENTS(F("Music Control"));
       break;
     case CMD_Change_Device_Name:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Change Device Name"));
+      DBG_EVENTS(F("Change Device Name"));
       break;
     case CMD_Change_PIN_Code:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Change PIN Code"));
+      DBG_EVENTS(F("Change PIN Code"));
       break;
     case CMD_BTM_Parameter_Setting:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM_Parameter_Setting"));
+      DBG_EVENTS(F("BTM_Parameter_Setting"));
       break;
     case CMD_Read_BTM_Version:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read_BTM_Version"));
+      DBG_EVENTS(F("Read_BTM_Version"));
       break;
     case CMD_Get_PB_By_AT_Cmd:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Get PB By AT Cmd"));
+      DBG_EVENTS(F("Get PB By AT Cmd"));
       break;
     case CMD_Vendor_AT_Command:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Vendor AT Command"));
+      DBG_EVENTS(F("Vendor AT Command"));
       break;
     case CMD_AVRCP_Specific_Cmd:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("AVRCP Specific Cmd"));
+      DBG_EVENTS(F("AVRCP Specific Cmd"));
       break;
     case CMD_AVRCP_Group_Navigation:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("AVRCP Group Navigation"));
+      DBG_EVENTS(F("AVRCP Group Navigation"));
       break;
     case CMD_Read_Link_Status:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read Link Status"));
+      DBG_EVENTS(F("Read Link Status"));
       break;
     case CMD_Read_Paired_Device_Record:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read Paired Device Record"));
+      DBG_EVENTS(F("Read Paired Device Record"));
       break;
     case CMD_Read_Local_BT_Address:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read Local BT Address"));
+      DBG_EVENTS(F("Read Local BT Address"));
       break;
     case CMD_Read_Local_Device_Name:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read Local Device Name"));
+      DBG_EVENTS(F("Read Local Device Name"));
       break;
     case CMD_Set_Access_PB_Method:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Set Access PB Method"));
+      DBG_EVENTS(F("Set Access PB Method"));
       break;
     case CMD_Send_SPP_iAP_Data:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Send SPP iAP Data"));
+      DBG_EVENTS(F("Send SPP iAP Data"));
       break;
     case CMD_BTM_Utility_Function:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("BTM Utility Function"));
+      DBG_EVENTS(F("BTM Utility Function"));
       break;
     case CMD_Event_ACK:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Event ACK"));
+      DBG_EVENTS(F("Event ACK"));
       break;
     case CMD_Additional_Profiles_Link_Setup:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Additional Profiles Link Setup"));
+      DBG_EVENTS(F("Additional Profiles Link Setup"));
       break;
     case CMD_Read_Linked_Device_Information:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Read Linked Device Information"));
+      DBG_EVENTS(F("Read Linked Device Information"));
       break;
     case CMD_Profile_Link_Back:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Profile Link Back"));
+      DBG_EVENTS(F("Profile Link Back"));
       break;
     case CMD_Disconnect:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Disconnect"));
+      DBG_EVENTS(F("Disconnect"));
       break;
     case CMD_MCU_Status_Indication:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("MCU Status Indication"));
+      DBG_EVENTS(F("MCU Status Indication"));
       break;
     case CMD_User_Confirm_SPP_Req_Reply:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("User Confirm SPP Req Reply"));
+      DBG_EVENTS(F("User Confirm SPP Req Reply"));
       break;
     case CMD_Set_HF_Gain_Level:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Set HF Gain Level"));
+      DBG_EVENTS(F("Set HF Gain Level"));
       break;
     case CMD_EQ_Mode_Setting:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("EQ Mode Setting"));
+      DBG_EVENTS(F("EQ Mode Setting"));
       break;
     case CMD_DSP_NR_CTRL:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("DSP NR CTRL"));
+      DBG_EVENTS(F("DSP NR CTRL"));
       break;
     case CMD_GPIO_Control:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("GPIO Control"));
+      DBG_EVENTS(F("GPIO Control"));
       break;
     case CMD_MCU_UART_Rx_Buffer_Size:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("MCU UART Rx Buffer Size"));
+      DBG_EVENTS(F("MCU UART Rx Buffer Size"));
       break;
     case CMD_Voice_Prompt_Cmd:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Voice Prompt Cmd"));
+      DBG_EVENTS(F("Voice Prompt Cmd"));
       break;
     case CMD_MAP_REQUEST:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("MAP REQUEST"));
+      DBG_EVENTS(F("MAP REQUEST"));
       break;
     case CMD_Security_Bonding_Req:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Security Bonding Req"));
+      DBG_EVENTS(F("Security Bonding Req"));
       break;
     case CMD_Set_Overall_Gain:
-      if (DEBUG_EVENTS) DBG_EVENTS(F("Set Overall Gain"));
+      DBG_EVENTS(F("Set Overall Gain"));
       break;
     default:
       DBG_EVENTS("Unknown CMD command " + String(cmd, HEX));
