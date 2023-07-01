@@ -16,7 +16,7 @@
 
 // settings
 #define VOL_MAX 127
-#define POWER_ANIM_BLINK_TIME 150
+#define POWER_ANIM_BLINK_TIME 300
 #define PAIRING_ANIM_BLINK_TIME 300
 
 #define DEBUG 1

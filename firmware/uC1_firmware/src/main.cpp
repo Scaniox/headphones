@@ -95,6 +95,10 @@ void update_animations() {
 
     case ANIM_POWER_OFF: {
         uint32_t blink_time = animation_time % (POWER_ANIM_BLINK_TIME * 2);
+        if (animation_step == 0) {
+            bm83.powerOff(current_device);
+        }
+
         switch (animation_step % 2) {
         case 0:
             if (blink_time < POWER_ANIM_BLINK_TIME) {
@@ -183,6 +187,11 @@ void power_on() {
     as3435_R.pbo_mode();
 
     bm83.resetModule();
+
+    // bm83.btmUtilityFunction() isn't implemented
+    // utility function 0x03, with data 0x00 dissables discoverable
+    bm83.sendPacketArrayChar(3, CMD_BTM_Utility_Function, 0x03, 0x00);
+
     // bm83.enableAllSettingEvent();
     // delay(1000);
     // digitalWrite(PIN_BM83_MFB, HIGH);
@@ -309,10 +318,10 @@ void bm83_serial_bridge() {
 /******************************************************************************/
 // callbacks
 /******************************************************************************/
-
-
-
-
+void exit_pairing() {
+    current_state = STATE_ON;
+    start_animation(ANIM_NONE);
+}
 
 
 /******************************************************************************/
@@ -514,7 +523,9 @@ void loop() {
 
         case STATE_ON:
             //   Read battery charge :
-            // float bat_SoC = fuel_guage.getSoC();
+            if (fuel_guage.getSoC() < 5) {
+                start_animation(ANIM_POWER_OFF);
+            }
             // • Power off if too low
             //   • Low battery audible warning(every 15 mins)
             //   • BM83 updates connected device

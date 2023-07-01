@@ -671,6 +671,8 @@ uint8_t  IS2020::sendSppIapData() {
 
 */
 uint8_t  IS2020::btmUtilityFunction() {
+  
+
   IS2020::getNextEventFromBt();
   if (DEBUG) DBG(F("BTM_Utility_Function\n"));
   return checkResponce(EVT_Command_ACK);
