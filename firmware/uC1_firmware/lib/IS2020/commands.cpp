@@ -412,7 +412,7 @@ uint8_t  IS2020::avrcpGroupNavigation(uint8_t deviceId, uint8_t direction) {
 }
 
 uint8_t IS2020::avrcpNextGroup(uint8_t deviceId) {
-  IS2020::avrcpGroupNavigation(deviceId, CMD_AVRCP_Group_NavigationNext);
+  return IS2020::avrcpGroupNavigation(deviceId, CMD_AVRCP_Group_NavigationNext);
 }
 
 uint8_t IS2020::avrcpPreviousGroup(uint8_t deviceId) {

@@ -1101,7 +1101,9 @@ uint8_t IS2020::getNextEventFromBt() {
                             case AVRCP_EVENT_RESPONSE_CHANGED:
                               uint8_t i = 14;
                               while (i < 14 + 2 * event[13]) {
-                                IS2020::decodeAvrcpPlayerAtributes(event[i++], event[i++]);
+                                uint8_t attribute = event[i++];
+                                uint8_t attrValue = event[i++];
+                                IS2020::decodeAvrcpPlayerAtributes(attribute, attrValue);
                               }
                               DBG_AVRCP(F("\n"));
                               IS2020::avrcpRegNotifyPlayerAppSettingsChanged(deviceID);
