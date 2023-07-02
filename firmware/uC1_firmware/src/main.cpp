@@ -23,7 +23,7 @@ Uart right_serial(&sercom2, PIN_RIGHT_SIDE_DATA, -1, SERCOM_RX_PAD_1, UART_TX_PA
 OPERATION_STATES current_state = STATE_OFF;
 ANC_MODE anc_mode = ANC;
 bool charging = false;
-int8_t current_device = 1;
+int8_t current_device = 0;
 
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
@@ -259,11 +259,13 @@ void read_bm83_events() {
             // go to only device 0 connected
             if (is_connected(0) && !is_connected(1)) {
                 switch_device(0);
+                Serial.println("switch to device 0");
             }
 
             // go to only device 1 connected
             if (!is_connected(0) && is_connected(1)) {
                 switch_device(1);
+                Serial.println("switch to device 1");
             }
             break;
         default:
@@ -456,6 +458,9 @@ void power_button_up_isr() {
             }
             // deliberate fall through so power off works in both
         case STATE_PAIRING:
+            if (press_duration < POWER_OFF_HOLD_TIME) {
+                stop_pairing();
+            }
             if (POWER_OFF_HOLD_TIME < press_duration && press_duration <= PAIRING_HOLD_TIME) {
                 start_animation(ANIM_POWER_OFF);
             }
@@ -665,10 +670,10 @@ void loop() {
 
         case STATE_PAIRING:
             // exit pairing by the same way it was entered
-            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME
-                && power_button_pressed) {
-                stop_pairing();
-            }
+            // if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME
+            //     && power_button_pressed) {
+            //     stop_pairing();
+            // }
 
             read_bm83_events();
 
