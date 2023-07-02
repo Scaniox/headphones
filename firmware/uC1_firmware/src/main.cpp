@@ -23,8 +23,7 @@ Uart right_serial(&sercom2, PIN_RIGHT_SIDE_DATA, -1, SERCOM_RX_PAD_1, UART_TX_PA
 OPERATION_STATES current_state = STATE_OFF;
 ANC_MODE anc_mode = ANC;
 bool charging = false;
-bool devices_connected[] = {true, false};
-uint8_t current_device = 0;
+int8_t current_device = 1;
 
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
@@ -61,6 +60,11 @@ void set_power_indicator(uint32_t colour) {
 
 // animations
 void start_animation(ANIMATIONS anim) {
+    // don't disturb power of unless it is powering on
+    if (current_animation == ANIM_POWER_OFF && anim != ANIM_POWER_ON){
+        return;
+    }
+
     current_animation = anim;
     animation_step = 0;
     animation_start_time = millis();
@@ -126,7 +130,10 @@ void update_animations() {
         switch (animation_step % 2) {
         case 0:
             if (blink_time < PAIRING_ANIM_BLINK_TIME) {
-                set_power_indicator((current_device) ? DEVICE_ONE_GREEN : DEVICE_TWO_PURPLE);
+                switch (current_device) {
+                case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
+                case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
+                }
                 animation_step++;
             }
             break;
@@ -141,15 +148,58 @@ void update_animations() {
     }
 
     case ANIM_NONE: {
-        switch (animation_step) {
-        case 0:
-            set_power_indicator((current_device) ? DEVICE_ONE_GREEN : DEVICE_TWO_PURPLE);
-            animation_step++;
-            break;
-        
-        default:
-            break;
+        // connected device - solid light of that colour
+        if (is_connected(current_device))  {
+            uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
+            switch (animation_step % 2) {
+            case 0:
+                if (blink_time < IDLE_BLINK_ON_TIME) {
+                    switch (current_device) {
+                    case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
+                    case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
+                    }
+                    animation_step++;
+                }
+                break;
+            case 1:
+                if (blink_time > IDLE_BLINK_ON_TIME) {
+                    set_power_indicator(0);
+                    animation_step++;
+                }
+                break;
+            }
         }
+
+        // unconnected device - light of that colour blinks with yellow
+        else {
+            uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
+            switch (animation_step % 4) {
+            case 0:
+                if (blink_time < IDLE_BLINK_ON_TIME) {
+                    switch (current_device) {
+                    case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
+                    case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
+                    }
+                    animation_step++;
+                }
+                break;
+            case 2:
+                if (blink_time < IDLE_BLINK_ON_TIME) {
+                    set_power_indicator(DISCONECTED_ORANGE);
+                    animation_step++;
+                }
+                break;
+
+            case 1:
+            case 3:
+                if (blink_time > IDLE_BLINK_ON_TIME) {
+                    set_power_indicator(0);
+                    animation_step++;
+                }
+                break;
+            }
+        }
+
         break;
     }
 
@@ -163,6 +213,64 @@ void update_animations() {
 void switch_device(uint8_t device) {
     current_device = device;
     start_animation(ANIM_NONE);
+}
+
+bool is_connected(uint8_t device) {
+    return (bm83.linkStatus[1 + device] & (1 << A2DP_profile_stream_channel_connected));
+}
+
+void start_pairing() {
+    if (current_state == STATE_OFF) {
+        power_on();
+    }
+
+    bm83.enterPairingMode(current_device);
+
+    current_state = STATE_PAIRING;
+    start_animation(ANIM_PAIRING);
+}
+
+void stop_pairing() {
+    bm83.exitPairingMode(current_device);
+    current_state = STATE_ON;
+    start_animation(ANIM_NONE);   
+}
+
+void read_bm83_events() {
+    // check for events from bm83
+    while (bm83.btSerial->available() > 3) {
+        bm83.getNextEventFromBt();
+    }
+
+    if (bm83.btmStatusChanged) {
+        bm83.readLinkStatus();
+        switch(bm83.btmState) {
+        case BTM_STATE_A2DP_link_established:
+        case BTM_STATE_A2DP_link_disconnected:
+            // exit pairing
+            if (current_state == STATE_PAIRING) {
+                stop_pairing();
+            }
+            // deliberate fall through
+        case BTM_STATE_pairing_fail:
+        case BTM_STATE_pairing_successful:
+            current_state = STATE_ON;
+
+            // go to only device 0 connected
+            if (is_connected(0) && !is_connected(1)) {
+                switch_device(0);
+            }
+
+            // go to only device 1 connected
+            if (!is_connected(0) && is_connected(1)) {
+                switch_device(1);
+            }
+            break;
+        default:
+            break;
+        }
+        bm83.btmStatusChanged = false;
+    }
 }
 
 // power
@@ -211,17 +319,6 @@ void power_on() {
     Serial.println("powering on");
 }
 
-void start_pairing() {
-    if (current_state == STATE_OFF) {
-        power_on();
-    }
-
-    bm83.enterPairingMode(current_device);
-
-    current_state = STATE_PAIRING;
-    start_animation(ANIM_PAIRING);
-}
-
 // debug usb
 void dissable_debug_USB() {
     USBDevice.detach();
@@ -242,9 +339,6 @@ void send_full_status() {
     Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
 
-    Serial.printf("devices_connected: {%i, %i}\n", devices_connected[0], devices_connected[1]);
-    Serial.printf("current_device: %i\n", current_device);
-
     Serial.printf("power_button_pressed_start_time: %i\n", power_button_pressed_start_time);
     Serial.printf("power_button_pressed: %i\n",power_button_pressed);
 
@@ -253,6 +347,21 @@ void send_full_status() {
     Serial.printf("current_animation: %i\n", current_animation);
     Serial.printf("animations: %i\n", animations);
     Serial.printf("================================================\n\n");
+}
+
+void send_bt_status() {
+    Serial.printf("module state: %s\n", bm83.moduleState().c_str());
+    Serial.printf("bt state: %s\n", bm83.btStatus().c_str());
+    Serial.printf("current_device: %i\n", current_device);
+
+    for (int dev_id = 0; dev_id < 2; dev_id++) {
+        Serial.printf("\ndevice: %i\n", dev_id);
+        Serial.printf("volume: %i/127\n", bm83.volume[dev_id]);
+        Serial.printf("music status: %s\n", bm83.musicStatus(dev_id).c_str());
+        Serial.printf("connection status: %s\n", bm83.connectionStatus(dev_id).c_str());
+        Serial.printf("stream status: %s\n", bm83.streamStatus(dev_id).c_str());
+        Serial.println();
+    }
 }
 
 void debug_parse(String s) {
@@ -267,17 +376,7 @@ void debug_parse(String s) {
     }
 
     if (s == "bt stat") {
-        Serial.printf("module state: %s\n", bm83.moduleState().c_str());
-        Serial.printf("bt state: %s\n", bm83.btStatus().c_str());
-
-        for (int dev_id = 0; dev_id < 2; dev_id++) {
-            Serial.printf("device: %i\n", dev_id);
-            Serial.printf("volume: %i/127\n", bm83.volume[dev_id]);
-            Serial.printf("music status: %s\n", bm83.musicStatus(dev_id).c_str());
-            Serial.printf("connection status: %s\n", bm83.connectionStatus(dev_id).c_str());
-            Serial.printf("stream status: %s\n", bm83.streamStatus(dev_id).c_str());
-            Serial.println();
-        }
+        send_bt_status();
     }
 }
 
@@ -324,14 +423,6 @@ void bm83_serial_bridge() {
 
     digitalWrite(PIN_BM83_PROG_EN, HIGH);
 }
-/******************************************************************************/
-// callbacks
-/******************************************************************************/
-void pairing_finished() {
-    current_state = STATE_ON;
-    start_animation(ANIM_NONE);
-}
-
 
 /******************************************************************************/
 // interrupts
@@ -360,6 +451,7 @@ void power_button_up_isr() {
     switch (current_state) {
         case STATE_ON:
             if (press_duration <= POWER_OFF_HOLD_TIME) {
+                // switch device
                 switch_device((current_device + 1) % 2);
             }
             // deliberate fall through so power off works in both
@@ -400,7 +492,7 @@ void power_button_isr() {
 // right side 
 
 void right_button_press_handler(char right_side_data) {
-    if (devices_connected[0] || devices_connected[1]) {
+    if (is_connected(0) || is_connected(1)) {
         // button press
         if (right_side_data & (1 << VOL_UP)) {
             // increase volume
@@ -539,7 +631,12 @@ void loop() {
             //   • Low battery audible warning(every 15 mins)
             //   • BM83 updates connected device
 
-            // power off it the battery is critically low
+            // check events from bm83
+            read_bm83_events();
+
+            if (bm83.btmStatusChanged) {
+
+            }
 
             //   Read on ear sensors :
             // • One ear : reduce volume
@@ -567,17 +664,23 @@ void loop() {
             break;
 
         case STATE_PAIRING:
+            // exit pairing by the same way it was entered
+            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME
+                && power_button_pressed) {
+                stop_pairing();
+            }
+
+            read_bm83_events();
+
             if (animations) {
                 update_animations();
             }
+            
 
             break;
 
         default:
             break;
-    }
-    while(bm83.btSerial -> available() > 3) {
-        bm83.getNextEventFromBt();
     }
 
     // process debug serial

@@ -19,6 +19,9 @@
 #define POWER_ANIM_BLINK_TIME 300
 #define PAIRING_ANIM_BLINK_TIME 300
 
+#define IDLE_BLINK_ON_TIME 200
+#define IDLE_BLINK_OFF_TIME 800
+
 // button timings
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500
@@ -101,16 +104,21 @@ void update_animations();
 
 // devices
 void switch_device(uint8_t device);
+bool is_connected(uint8_t device);
+void start_pairing();
+void stop_pairing();
+void read_bm83_events();
+
 
 // power
 void power_off();
 void power_on();
-void start_pairing();
 
 // debug usb
 void dissable_debug_USB();
 void enable_debug_USB();
 void send_full_status();
+void send_bt_status();
 void debug_parse(String s);
 void bm83_serial_bridge();
 
