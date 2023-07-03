@@ -243,7 +243,7 @@ void read_bm83_events() {
     }
 
     if (bm83.btmStatusChanged) {
-        bm83.readLinkStatus();
+        // bm83.readLinkStatus();
         switch(bm83.btmState) {
         case BTM_STATE_A2DP_link_established:
         case BTM_STATE_A2DP_link_disconnected:
@@ -379,6 +379,15 @@ void debug_parse(String s) {
 
     if (s == "bt stat") {
         send_bt_status();
+    }
+
+    if (s == "AEC ON") {
+        bm83.mmiAction(current_device, MMI_enableAEC);
+    }
+
+
+    if (s == "AEC OFF") {
+        bm83.mmiAction(current_device, MMI_disableAEC);
     }
 }
 
