@@ -344,7 +344,6 @@ void send_full_status() {
     Serial.printf("anc_mode: %i\n", anc_mode);
 
     Serial.printf("charging: %i\n", digitalRead(PIN_CHRG_STAT));
-    bm83.report_Battery_Capacity(constrain( (int)fuel_guage.getSoC(), 0, 100));
     Serial.printf("bat soc: %f\n", fuel_guage.getSoC());
     Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
@@ -383,6 +382,11 @@ void debug_parse(String s) {
         bm83.readLocalDeviceName();
         Serial.println("NAME:");
         Serial.println(bm83.localDeviceName);
+    }
+
+    if (s == "prompt") {
+        bm83.voicePromptCmd
+        bm83.btmUtilityFunction(current_device, 0x02, 0x4C);
     }
 
     if (s == "bt stat") {
