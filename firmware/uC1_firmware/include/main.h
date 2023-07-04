@@ -22,6 +22,9 @@
 #define IDLE_BLINK_ON_TIME 100
 #define IDLE_BLINK_OFF_TIME 900
 
+#define BATTERY_CHECK_INTERVAL 500
+#define LOW_BAT_SHUTOFF_SOC 5
+
 // button timings
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500
@@ -108,7 +111,7 @@ bool is_connected(uint8_t device);
 void start_pairing();
 void stop_pairing();
 void read_bm83_events();
-
+void check_battery();
 
 // power
 void power_off();

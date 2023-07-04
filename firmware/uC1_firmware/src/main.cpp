@@ -18,12 +18,11 @@ IS2020 bm83(&Serial1);
 MAX17048 fuel_guage;
 Uart right_serial(&sercom2, PIN_RIGHT_SIDE_DATA, -1, SERCOM_RX_PAD_1, UART_TX_PAD_0);
 
-
-
 OPERATION_STATES current_state = STATE_OFF;
 ANC_MODE anc_mode = ANC;
 bool charging = false;
 int8_t current_device = 0;
+uint32_t last_battery_check = 0;
 
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
@@ -33,10 +32,8 @@ volatile uint8_t animation_step = 0;
 volatile ANIMATIONS current_animation = ANIM_NONE;
 bool animations = true;
 
-
 volatile uint8_t ear_R_dark_reading  = 0;
 volatile uint8_t ear_R_light_reading = 0;
-
 
 bool debug_serial = true;
 String debug_input = "";
@@ -232,6 +229,7 @@ void start_pairing() {
 
 void stop_pairing() {
     bm83.exitPairingMode(current_device);
+
     current_state = STATE_ON;
     start_animation(ANIM_NONE);   
 }
@@ -267,11 +265,22 @@ void read_bm83_events() {
                 switch_device(1);
                 Serial.println("switch to device 1");
             }
+
             break;
         default:
             break;
         }
         bm83.btmStatusChanged = false;
+    }
+}
+
+void check_battery() {
+    if (millis() - last_battery_check > BATTERY_CHECK_INTERVAL) {
+        last_battery_check = millis();
+
+        if (fuel_guage.getSoC() < LOW_BAT_SHUTOFF_SOC) {
+            start_animation(ANIM_POWER_OFF);
+        }
     }
 }
 
@@ -299,7 +308,6 @@ void power_on() {
     delay(3);
     as3435_R.begin(AS3435_I2CADDR_R);
     as3435_R.pbo_mode();
-
 
     bm83.resetModule();
 
@@ -585,11 +593,6 @@ void setup() {
     pinMode(PIN_CHRG_STAT, INPUT_PULLUP);
     pinMode(PIN_BAT_ALRT, INPUT_PULLUP);
 
-    // dissable debug usb if not needed
-    if (!debug_serial) {
-        dissable_debug_USB();
-    }
-
     // set up i2c bus
     Wire.begin();
     Wire.setClock(400000);
@@ -603,8 +606,8 @@ void setup() {
 
     // set up BM83
     digitalWrite(PIN_BM83_PROG_EN, HIGH); // normal boot, not prog boot
-    Serial1.begin(115200);
     bm83.begin(PIN_BM83_RESET);
+    bm83.enterPairingMode(0);
 
     // set up right side serial
     right_serial.begin(9600);
@@ -637,20 +640,8 @@ void loop() {
             break;                               
 
         case STATE_ON:
-            //   Read battery charge :
-            if (fuel_guage.getSoC() < 5) {
-                start_animation(ANIM_POWER_OFF);
-            }
-            // • Power off if too low
-            //   • Low battery audible warning(every 15 mins)
-            //   • BM83 updates connected device
-
-            // check events from bm83
+            check_battery();
             read_bm83_events();
-
-            if (bm83.btmStatusChanged) {
-
-            }
 
             //   Read on ear sensors :
             // • One ear : reduce volume
@@ -678,18 +669,11 @@ void loop() {
             break;
 
         case STATE_PAIRING:
-            // exit pairing by the same way it was entered
-            // if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME
-            //     && power_button_pressed) {
-            //     stop_pairing();
-            // }
-
+            check_battery();
             read_bm83_events();
-
             if (animations) {
                 update_animations();
             }
-            
 
             break;
 
