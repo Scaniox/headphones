@@ -4,7 +4,7 @@
 #define IS2020_h
 
 #define DEBUG 1
-#define DEBUG_AVRCP 1
+#define DEBUG_AVRCP 0
 #define DEBUG_EVENTS 1
 #define PHONEBOOKSUPPORT
 
@@ -71,7 +71,7 @@ class IS2020
     uint8_t  readLocalDeviceName();
     uint8_t  setAccessPbMethod();
     uint8_t  sendSppIapData();
-    uint8_t  btmUtilityFunction();
+    uint8_t  btmUtilityFunction(uint8_t deviceId, uint8_t function_type, uint8_t parameter);
     uint8_t  eventAck(uint8_t cmd);
     uint8_t  additionalProfilesLinkSetup(uint8_t deviceId, uint8_t profile);
     uint8_t  additionalProfilesLinkSetupHfHs(uint8_t deviceId);

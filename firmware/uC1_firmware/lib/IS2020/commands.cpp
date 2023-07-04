@@ -670,9 +670,11 @@ uint8_t  IS2020::sendSppIapData() {
   0x26
 
 */
-uint8_t  IS2020::btmUtilityFunction() {
+uint8_t  IS2020::btmUtilityFunction(uint8_t deviceId, uint8_t function_type, uint8_t parameter) {
   IS2020::getNextEventFromBt();
   DBG(F("BTM_Utility_Function\n"));
+  uint8_t data[2] = {function_type, parameter};
+  IS2020::sendPacketArrayInt(0x03, CMD_BTM_Utility_Function, deviceId, data);
   return checkResponce(EVT_Command_ACK);
 }
 /*

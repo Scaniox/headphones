@@ -30,6 +30,11 @@ uint8_t IS2020::getNextEventFromBt() {
       }
       if (checkCkeckSum(packetSize, event)) {
 
+        // if it's not an ack, ack the event (massively speeds up events)
+        if (event[0] != EVT_Command_ACK) {
+          IS2020::eventAck(event[0]);
+        }
+
         switch (event[0]) {
           /*
              Event Format: Event       Event Code  Event Parameters
