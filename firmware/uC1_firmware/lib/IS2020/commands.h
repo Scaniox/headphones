@@ -57,4 +57,17 @@
 #define INIT_SPP_iAP_CONNECTION 0x03	//initiate SPP/iAP connection to last SPP/iAP device
 #define INIT_DEDICATED_CONNECTION 0x04	//initiate connection to dedicate device.
 
+// from page 54 of the uart command set v2.09
+#define OVERALL_GAIN_MASK_A2DP          1 << 0
+#define OVERALL_GAIN_MASK_HF            1 << 1
+#define OVERALL_GAIN_MASK_LINE_IN       1 << 2
+#define OVERALL_GAIN_MASK_PCM           1 << 3
+#define OVERALL_GAIN_MASK_LINE_IN_INPUT 1 << 4
+
+#define OVERALL_GAIN_TYPE_VOL_UP    0x01
+#define OVERALL_GAIN_TYPE_VOL_DOWN  0x02
+#define OVERALL_GAIN_TYPE_ABS_LEVEL 0x03
+#define OVERALL_GAIN_TYPE_ABS_VAL   0x04
+#define OVERALL_GAIN_TYPE_MCU_SYNC  0x05
+
 #endif

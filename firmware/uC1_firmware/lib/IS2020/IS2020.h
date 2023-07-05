@@ -91,7 +91,7 @@ class IS2020
     uint8_t  voicePromptCmd();
     uint8_t  mapRequest();
     uint8_t  securityBondingReq();
-    uint8_t  setOverallGain();
+    uint8_t  setOverallGain(uint8_t deviceID, uint8_t mask, uint8_t type, uint8_t gain1 = 0, uint8_t gain2 = 0, uint8_t gain3 = 0);
     uint8_t  report_Battery_Capacity(uint8_t bat_level);
     int      serialAvailable();
     int      serialRead();

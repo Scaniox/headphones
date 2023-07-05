@@ -23,6 +23,7 @@ ANC_MODE anc_mode = ANC;
 bool charging = false;
 int8_t current_device = 0;
 uint32_t last_battery_check = 0;
+float batSOC = 0;
 
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
@@ -146,55 +147,45 @@ void update_animations() {
 
     case ANIM_NONE: {
         // connected device - solid light of that colour
-        if (is_connected(current_device))  {
-            uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
-            switch (animation_step % 2) {
-            case 0:
-                if (blink_time < IDLE_BLINK_ON_TIME) {
-                    switch (current_device) {
-                    case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
-                    case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
-                    }
-                    animation_step++;
-                }
-                break;
-            case 1:
-                if (blink_time > IDLE_BLINK_ON_TIME) {
-                    set_power_indicator(0);
-                    animation_step++;
-                }
-                break;
-            }
-        }
-
         // unconnected device - light of that colour blinks with yellow
-        else {
-            uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
-            switch (animation_step % 4) {
-            case 0:
-                if (blink_time < IDLE_BLINK_ON_TIME) {
+        uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
+        switch (animation_step % 4) {
+        case 0:
+            if (blink_time < IDLE_BLINK_ON_TIME) {
+                set_ANC_indicator(indicator_LEDs.ColorHSV(batSOC * 220));
+
+                switch (current_device) {
+                case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
+                case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
+                }
+                animation_step++;
+            }
+            break;
+        case 2:
+            if (blink_time < IDLE_BLINK_ON_TIME) {
+                set_ANC_indicator(indicator_LEDs.ColorHSV(batSOC * 220));
+
+                if (is_connected(current_device)) {
                     switch (current_device) {
                     case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
                     case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
                     }
-                    animation_step++;
                 }
-                break;
-            case 2:
-                if (blink_time < IDLE_BLINK_ON_TIME) {
+                else {
                     set_power_indicator(DISCONECTED_ORANGE);
-                    animation_step++;
                 }
-                break;
-
-            case 1:
-            case 3:
-                if (blink_time > IDLE_BLINK_ON_TIME) {
-                    set_power_indicator(0);
-                    animation_step++;
-                }
-                break;
+                animation_step++;
             }
+            break;
+
+        case 1:
+        case 3:
+            if (blink_time > IDLE_BLINK_ON_TIME) {
+                set_power_indicator(0);
+                set_ANC_indicator(0);
+                animation_step++;
+            }
+            break;
         }
 
         break;
@@ -278,7 +269,10 @@ void check_battery() {
     if (millis() - last_battery_check > BATTERY_CHECK_INTERVAL) {
         last_battery_check = millis();
 
-        if (fuel_guage.getSoC() < LOW_BAT_SHUTOFF_SOC) {
+        batSOC = constrain(fuel_guage.getSoC(), 0, 100);
+        bm83.report_Battery_Capacity(batSOC);
+
+        if (batSOC < LOW_BAT_SHUTOFF_SOC) {
             start_animation(ANIM_POWER_OFF);
         }
     }
@@ -385,7 +379,9 @@ void debug_parse(String s) {
     }
 
     if (s == "prompt") {
-        bm83.voicePromptCmd
+        uint8_t voice_command[] = {CMD_Voice_Prompt_Cmd, 0x00, };
+
+
         bm83.btmUtilityFunction(current_device, 0x02, 0x4C);
     }
 
@@ -522,15 +518,13 @@ void right_button_press_handler(char right_side_data) {
         // button press
         if (right_side_data & (1 << VOL_UP)) {
             // increase volume
-            uint8_t volume = min((bm83.volume[current_device] + 10), VOL_MAX);
-            bm83.avrcpSetAbsoluteVolume(current_device, volume);
+            bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
             Serial.println("VOL_UP");
         }
 
         if (right_side_data & (1 << VOL_DOWN)) {
             // decrease volume
-            uint8_t volume = max((bm83.volume[current_device] - 10), 0);
-            bm83.avrcpSetAbsoluteVolume(current_device, volume);
+            bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
             Serial.println("VOL_DOWN");
         }
 

@@ -1206,8 +1206,10 @@ uint8_t  IS2020::securityBondingReq() {
   0xXX  0x00~0x0F
 
 */
-uint8_t  IS2020::setOverallGain() {
+uint8_t  IS2020::setOverallGain(uint8_t deviceID, uint8_t mask, uint8_t type, uint8_t gain1, uint8_t gain2, uint8_t gain3) {
   IS2020::getNextEventFromBt();
+  uint8_t data[5] = {mask, type, gain1, gain2, gain3};
+  IS2020::sendPacketArrayInt(0x06, CMD_Set_Overall_Gain, deviceID, data);
   return checkResponce(EVT_Command_ACK);
 }
 
@@ -1331,6 +1333,9 @@ void IS2020::decodeCommand(uint8_t cmd) {
       break;
     case CMD_Set_Overall_Gain:
       DBG(F("Set Overall Gain"));
+      break;
+    case CMD_Report_Battery_Capacity:
+      DBG(F("Report Battery Capacity"));
       break;
     default:
       DBG("Unknown CMD command " + String(cmd, HEX));

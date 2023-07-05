@@ -1897,6 +1897,9 @@ uint8_t IS2020::getNextEventFromBt() {
             break;
           case EVT_Report_Voice_Prompt_Status:
             {
+              if (event[1]) {
+                DBG_EVENTS("Voice ready");
+              }
             }
             break;
           case EVT_Report_MAP_Data:
@@ -2180,6 +2183,9 @@ void IS2020::decodeCommandInEvents(uint8_t cmd) {
       break;
     case CMD_Set_Overall_Gain:
       DBG_EVENTS(F("Set Overall Gain"));
+      break;
+    case CMD_Report_Battery_Capacity:
+      DBG_EVENTS(F("Report Battery Capacity"));
       break;
     default:
       DBG_EVENTS("Unknown CMD command " + String(cmd, HEX));
