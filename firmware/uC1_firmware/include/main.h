@@ -15,8 +15,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // settings
-#define VOL_MAX 127
-#define POWER_ANIM_BLINK_TIME 300
+#define POWER_ANIM_BLINK_TIME 200
 #define PAIRING_ANIM_BLINK_TIME 300
 
 #define IDLE_BLINK_ON_TIME 100
@@ -28,6 +27,9 @@
 // button timings
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500
+
+#define VOL_HOLD_START_TIME 400
+#define VOL_HOLD_REPEAT_TIME 200
 
 // pin definitions
 #define PIN_EAR_SENSE_L_EN      A3
@@ -76,12 +78,13 @@ enum ANIMATIONS {
 };
 
 // right side button mask
-enum {
+enum RIGHT_MASK{
     VOL_UP,
     VOL_DOWN,
     PAUSE,
     BACK,
     FWRD,
+    NONE,
 };
 
 

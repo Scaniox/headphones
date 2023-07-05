@@ -112,7 +112,13 @@ void AS3435::pbo_mode() {
 }
 
 void AS3435::set_output_driver_en(bool state) {
-    uint8_t current_val = readRegister8(AS3435_MODE_2);
-    uint8_t new_val = (state) ? current_val | _BV(1) : current_val & ~_BV(1);
-    writeRegister(AS3435_MODE_2, new_val); 
+    // uint8_t current_val = readRegister8(AS3435_MODE_2);
+    // uint8_t new_val = (state) ? current_val | _BV(1) : current_val & ~_BV(1);
+    // writeRegister(AS3435_MODE_2, new_val); 
+    if (state) {
+        writeRegister(AS3435_MODE_2, 0x03);
+    }
+    else {
+        writeRegister(AS3435_MODE_2, 0x00);
+    }
 }

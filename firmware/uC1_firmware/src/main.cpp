@@ -25,8 +25,12 @@ int8_t current_device = 0;
 uint32_t last_battery_check = 0;
 float batSOC = 0;
 
-volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 volatile bool power_button_pressed = false;          // used for hold and double presses
+volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
+
+volatile RIGHT_MASK volume_button_pressed = NONE;
+volatile uint32_t volume_button_pressed_start_time = 0;
+uint32_t volume_button_pressed_repeat_time = 0;
 
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
@@ -116,7 +120,7 @@ void update_animations() {
             break;
         }
         // end of animation
-        if (animation_step > 3) {
+        if (animation_step > 5) {
             start_animation(ANIM_NONE);
             power_off();
         }
@@ -284,6 +288,7 @@ void power_off() {
     delay(3);
     as3435_R.set_output_driver_en(0);
 
+    delay(1000);
     current_state = STATE_OFF;
     digitalWrite(PIN_3V3_EN, LOW);
 
@@ -378,24 +383,20 @@ void debug_parse(String s) {
         Serial.println(bm83.localDeviceName);
     }
 
-    if (s == "prompt") {
-        uint8_t voice_command[] = {CMD_Voice_Prompt_Cmd, 0x00, };
-
-
-        bm83.btmUtilityFunction(current_device, 0x02, 0x4C);
-    }
-
     if (s == "bt stat") {
         send_bt_status();
     }
 
-    if (s == "AEC ON") {
-        bm83.mmiAction(current_device, MMI_enableAEC);
-    }
+    if (s == "driver on") {
+        as3435_L.set_output_driver_en(1);
+        delay(10);
+        as3435_R.set_output_driver_en(1);
+    } 
 
-
-    if (s == "AEC OFF") {
-        bm83.mmiAction(current_device, MMI_disableAEC);
+    if (s == "driver off") {
+        as3435_L.set_output_driver_en(0);
+        delay(10);
+        as3435_R.set_output_driver_en(0);
     }
 }
 
@@ -512,19 +513,23 @@ void power_button_isr() {
 // serial isrs
 
 // right side 
-
 void right_button_press_handler(char right_side_data) {
     if (is_connected(0) || is_connected(1)) {
         // button press
+        volume_button_pressed = NONE;
         if (right_side_data & (1 << VOL_UP)) {
             // increase volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
+            volume_button_pressed = VOL_UP;
+            volume_button_pressed_start_time = millis();
             Serial.println("VOL_UP");
         }
 
         if (right_side_data & (1 << VOL_DOWN)) {
             // decrease volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
+            volume_button_pressed = VOL_DOWN;
+            volume_button_pressed_start_time = millis();
             Serial.println("VOL_DOWN");
         }
 
@@ -535,7 +540,7 @@ void right_button_press_handler(char right_side_data) {
 
         if (right_side_data & (1 << BACK)) {
             bm83.previousSong(current_device);
-            Serial.println("baack");
+            Serial.println("back");
         }
 
         if (right_side_data & (1 << FWRD)) {
@@ -650,6 +655,22 @@ void loop() {
             if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
                 && power_button_pressed) {
                 start_pairing();
+            }
+
+            // volume button hold time
+            if (millis() - volume_button_pressed_start_time > VOL_HOLD_START_TIME
+                && volume_button_pressed != NONE ) {
+                
+                if (millis() - volume_button_pressed_repeat_time > VOL_HOLD_REPEAT_TIME) {
+                    if (volume_button_pressed == VOL_UP) {
+                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
+                    }
+                    else if (volume_button_pressed == VOL_DOWN) {
+                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
+                    }
+
+                    volume_button_pressed_repeat_time = millis();
+                }
             }
 
             //   Read ANC slider
