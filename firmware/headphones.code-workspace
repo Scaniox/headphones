@@ -8,5 +8,12 @@
 			"name": "uC2_firmware",
 			"path": "uC2_firmware"
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"arduino.h": "c",
+			"queue": "cpp",
+			"deque": "cpp"
+		}
+	}
 }

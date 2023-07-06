@@ -13,6 +13,7 @@
 #include <MAX17048.h>
 #include <IS2020.h>
 #include <Adafruit_NeoPixel.h>
+#include "event timer.h"
 
 // settings
 #define POWER_ANIM_BLINK_TIME 200
