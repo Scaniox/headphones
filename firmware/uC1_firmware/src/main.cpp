@@ -635,10 +635,12 @@ void setup() {
 void loop() {
     switch (current_state) {
         case STATE_OFF:
-            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
-                && power_button_pressed) {
-                start_pairing();
-            }
+            // if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
+            //     && power_button_pressed) {
+            //     start_pairing();
+            // }
+            Watchdog.sleep(500);
+            USBDevice.attach();
             
             break;                               
 
