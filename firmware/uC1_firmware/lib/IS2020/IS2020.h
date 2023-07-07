@@ -3,9 +3,9 @@
 #ifndef IS2020_h
 #define IS2020_h
 
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_AVRCP 0
-#define DEBUG_EVENTS 1
+#define DEBUG_EVENTS 0
 #define PHONEBOOKSUPPORT
 
 #include <Arduino.h>

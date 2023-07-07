@@ -7,18 +7,28 @@
  ******************************************************************************/
 #include "event timer.h" 
 
+// initialise statics
 uint32_t Event_Timer::millis_offset = 0;
+TRIGGERS_PRIORITY_QUEUE_t Event_Timer::trigger_times = TRIGGERS_PRIORITY_QUEUE_t();
 
 // sets the timer to trigger in [time] ms
 void Event_Timer::start_countdown(uint32_t time) {
-    trigger_time = Event_Timer::get_sys_time_ms() + time;
+    start_time = Event_Timer::get_sys_time_ms();
+    trigger_time = start_time + time;
+    running = true;
+    triggered = false;
 
-    if (trigger_times.available()) {
-        trigger_times.push(trigger_time);
-    }
-    else {
-        Serial.printf("trigger times queue is full, failed to add timer, stalling likely\n");
-    }
+    // if (trigger_times.available()) {
+    //     trigger_times.push(trigger_time);
+    // }
+    // else {
+    //     Serial.printf("trigger times queue is full, failed to add timer, stalling likely\n");
+    // }
+}
+
+// stops the timer, so it won't trigger
+void Event_Timer::stop() {
+    running = false;
 }
 
 // returns (ms) how long before the timer triggers
@@ -27,9 +37,25 @@ uint32_t Event_Timer::get_time_left() {
     return max(time_left, 0);
 }
 
-// returns if the timer has triggered yet
-bool Event_Timer::has_triggered() {
+uint32_t Event_Timer::get_time_running() {
+    return Event_Timer::get_sys_time_ms() - start_time;
+}
+
+// returns true if it is after it's trigger time
+bool Event_Timer::has_elapsed() {
     return get_time_left() == 0;
+}
+
+// returns true the first time it is called after the timer elapses 
+// used to trigger the timer finishing actions
+bool Event_Timer::has_triggered() {
+    if (has_elapsed() && !triggered){
+        triggered = true;
+        return running;
+    }
+    else {
+        return false;
+    }
 }
 
 // returns (ms) how long until the next timer will trigger

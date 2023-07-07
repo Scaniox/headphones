@@ -25,17 +25,18 @@ int8_t current_device = 0;
 uint32_t last_battery_check = 0;
 float batSOC = 0;
 
-volatile bool power_button_pressed = false;          // used for hold and double presses
-volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
+Event_Timer power_button_timer;
 
 volatile RIGHT_MASK volume_button_pressed = NONE;
 volatile uint32_t volume_button_pressed_start_time = 0;
 uint32_t volume_button_pressed_repeat_time = 0;
+Event_Timer volume_button_timer;
 
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
 volatile ANIMATIONS current_animation = ANIM_NONE;
 bool animations = true;
+Event_Timer animation_timer;
 
 volatile uint8_t ear_R_dark_reading  = 0;
 volatile uint8_t ear_R_light_reading = 0;
@@ -212,6 +213,7 @@ bool is_connected(uint8_t device) {
 }
 
 void start_pairing() {
+    Serial.println("start_pairing");
     if (current_state == STATE_OFF) {
         power_on();
     }
@@ -288,7 +290,6 @@ void power_off() {
     delay(3);
     as3435_R.set_output_driver_en(0);
 
-    delay(1000);
     current_state = STATE_OFF;
     digitalWrite(PIN_3V3_EN, LOW);
 
@@ -347,8 +348,8 @@ void send_full_status() {
     Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
 
-    Serial.printf("power_button_pressed_start_time: %i\n", power_button_pressed_start_time);
-    Serial.printf("power_button_pressed: %i\n",power_button_pressed);
+    Serial.printf("power_button_pressed_start_time: %i\n", power_button_timer.start_time);
+    Serial.printf("power_button_pressed: %i\n",power_button_timer.running);
 
     Serial.printf("animation_start_time: %i\n", animation_start_time);
     Serial.printf("animation_step: %i\n", animation_step);
@@ -450,23 +451,21 @@ void bm83_serial_bridge() {
 // power button isrs
 void power_button_down_isr() {
     // debounce by ignoring very recent presses
-    if (millis() - power_button_pressed_start_time < 2) {
+    if (power_button_timer.get_time_running() < 2) {
         //return;
     }
 
-    power_button_pressed = true;
-    power_button_pressed_start_time = millis();
+    power_button_timer.start_countdown(PAIRING_HOLD_TIME);
 }
 
 void power_button_up_isr() {
-    uint32_t press_duration = millis() - power_button_pressed_start_time;
+    uint32_t press_duration = power_button_timer.get_time_running();
+    power_button_timer.stop();
 
     // debounce by discounting pulses that are too short
     if(press_duration < 2) {
-        //return;
+        return;
     }
-
-    power_button_pressed = false;
 
     switch (current_state) {
         case STATE_ON:
@@ -493,18 +492,21 @@ void power_button_up_isr() {
             NVIC_SystemReset();
             break;
     }
-    
-
 }
 
 void power_button_isr() {
     delayMicroseconds(500);
+    // need to ensure that the event timer sys time reading is corrected
+
+
     switch (digitalRead(PIN_PWR_SW)) {
     case LOW:
+        Serial.printf("pwr btn down\n");
         power_button_down_isr();
         break;
 
     case HIGH:
+        Serial.printf("pwr btn up\n");
         power_button_up_isr();
         break;
     }
@@ -635,9 +637,9 @@ void setup() {
 void loop() {
     switch (current_state) {
         case STATE_OFF:
-            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
-                && power_button_pressed) {
+            if (power_button_timer.has_triggered()) {
                 start_pairing();
+                Serial.println("paring from power off");
             }
             
             break;                               
@@ -652,9 +654,9 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
-            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
-                && power_button_pressed) {
+            if (power_button_timer.has_triggered()) {
                 start_pairing();
+                Serial.println("paring from power on");
             }
 
             // volume button hold time
