@@ -33,6 +33,7 @@ https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8495-8-bit-AVR-Microcontr
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/power.h>
 
 enum {
     VOL_UP,
@@ -60,6 +61,7 @@ int last_press_time = 0;
 
 // pin change interrupt
 ISR(PCINT0_vect) {
+
     for (int _=0; _< DEBOUNCE_WAIT_TIME; _++) {
         delayMicroseconds(1000u);
     }
@@ -75,9 +77,11 @@ ISR(PCINT0_vect) {
     // clear flag for this interrupt so it doesn't re-trigger immediately due to 
     // switch bounce
     GIFR |= _BV(PCIF0);
+
 }
 
-ISR(WDT_vect) { }
+ISR(WDT_vect) {
+}
 
 void setup() {
     cli();
@@ -105,21 +109,13 @@ void setup() {
     // set to alternate pin (PA7)
     REMAP |= _BV(U0MAP);
 
-    // // set up WDT
-    // WDTCSR |= 1 << WDIE; // WDT interrupt
-
-    // // start WDT
-    // wdt_enable(WDTO_120MS);
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    sleep_enable();
 
     sei();
-}
 
-void loop() {
-    cli();
-    // pause WDT
-    // sleep_disable();
-    // wdt_disable();
-    
+    wdt_enable(WDTO_1S); // start WDT
+
     // ear sense measurement
     digitalWrite(P_OPTO_LDR_EN, HIGH);
     uint8_t dark_ear_sense = analogRead(P_OPTO_OUT) >> 1;
@@ -132,17 +128,14 @@ void loop() {
     // transmit over uart
     Serial.write(dark_ear_sense);
     Serial.write(bright_ear_sense);
+    delay(2);
 
-    // start / reset WDT
-    // wdt_enable(WDTO_120MS);
+    power_adc_disable();
+    sleep_mode();
 
-    sei();
+}
 
-    // // go to Power down mode
-    // sleep_enable();
-    // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-    // sleep_cpu();
-
-    delay(500);
+void loop() {
+    // never gets here
 }
 
