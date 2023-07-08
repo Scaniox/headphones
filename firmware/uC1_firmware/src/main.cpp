@@ -28,8 +28,6 @@ float batSOC = 0;
 Event_Timer power_button_timer;
 
 volatile RIGHT_MASK volume_button_pressed = NONE;
-volatile uint32_t volume_button_pressed_start_time = 0;
-uint32_t volume_button_pressed_repeat_time = 0;
 Event_Timer volume_button_timer;
 
 volatile uint32_t animation_start_time = 0;
