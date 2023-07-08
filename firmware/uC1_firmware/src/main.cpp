@@ -30,13 +30,13 @@ Event_Timer power_button_timer;
 volatile RIGHT_MASK volume_button_pressed = NONE;
 volatile uint32_t volume_button_pressed_start_time = 0;
 uint32_t volume_button_pressed_repeat_time = 0;
-Event_Timer volume_button_timer;
+// Event_Timer volume_button_timer;
 
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
 volatile ANIMATIONS current_animation = ANIM_NONE;
 bool animations = true;
-Event_Timer animation_timer;
+// Event_Timer animation_timer;
 
 volatile uint8_t ear_R_dark_reading  = 0;
 volatile uint8_t ear_R_light_reading = 0;
@@ -349,7 +349,6 @@ void send_full_status() {
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
 
     Serial.printf("power_button_pressed_start_time: %i\n", power_button_timer.start_time);
-    Serial.printf("power_button_pressed: %i\n",power_button_timer.running);
 
     Serial.printf("animation_start_time: %i\n", animation_start_time);
     Serial.printf("animation_step: %i\n", animation_step);
@@ -464,7 +463,7 @@ void power_button_up_isr() {
 
     // debounce by discounting pulses that are too short
     if(press_duration < 2) {
-        return;
+        //return;
     }
 
     switch (current_state) {
@@ -501,12 +500,10 @@ void power_button_isr() {
 
     switch (digitalRead(PIN_PWR_SW)) {
     case LOW:
-        Serial.printf("pwr btn down\n");
         power_button_down_isr();
         break;
 
     case HIGH:
-        Serial.printf("pwr btn up\n");
         power_button_up_isr();
         break;
     }
@@ -637,11 +634,11 @@ void setup() {
 void loop() {
     switch (current_state) {
         case STATE_OFF:
+            noInterrupts();
             if (power_button_timer.has_triggered()) {
                 start_pairing();
-                Serial.println("paring from power off");
             }
-            
+            interrupts();
             break;                               
 
         case STATE_ON:
@@ -654,10 +651,11 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
+            noInterrupts();
             if (power_button_timer.has_triggered()) {
                 start_pairing();
-                Serial.println("paring from power on");
             }
+            interrupts();
 
             // volume button hold time
             if (millis() - volume_button_pressed_start_time > VOL_HOLD_START_TIME

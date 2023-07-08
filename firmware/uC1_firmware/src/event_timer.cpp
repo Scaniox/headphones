@@ -15,7 +15,6 @@ TRIGGERS_PRIORITY_QUEUE_t Event_Timer::trigger_times = TRIGGERS_PRIORITY_QUEUE_t
 void Event_Timer::start_countdown(uint32_t time) {
     start_time = Event_Timer::get_sys_time_ms();
     trigger_time = start_time + time;
-    running = true;
     triggered = false;
 
     // if (trigger_times.available()) {
@@ -28,7 +27,7 @@ void Event_Timer::start_countdown(uint32_t time) {
 
 // stops the timer, so it won't trigger
 void Event_Timer::stop() {
-    running = false;
+    triggered = true;
 }
 
 // returns (ms) how long before the timer triggers
@@ -51,7 +50,7 @@ bool Event_Timer::has_elapsed() {
 bool Event_Timer::has_triggered() {
     if (has_elapsed() && !triggered){
         triggered = true;
-        return running;
+        return true;
     }
     else {
         return false;

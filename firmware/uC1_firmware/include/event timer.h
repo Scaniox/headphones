@@ -14,9 +14,7 @@
 
 class Event_Timer {
     public:
-        uint32_t time = 0;
-        bool running = false;
-        bool triggered = false;
+        volatile bool triggered = true;
 
         Event_Timer() {}
         void start_countdown(uint32_t time); 
@@ -29,8 +27,8 @@ class Event_Timer {
         static uint32_t global_time_to_next_trigger();
         static void sleep_until_next_trigger();
 
-        uint32_t trigger_time = 0;
-        uint32_t start_time = 0;
+        volatile uint32_t trigger_time = 0;
+        volatile uint32_t start_time = 0;
 
         static uint32_t millis_offset;
         static TRIGGERS_PRIORITY_QUEUE_t trigger_times;
