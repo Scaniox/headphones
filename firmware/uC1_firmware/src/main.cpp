@@ -647,7 +647,6 @@ void loop() {
             }
 
             // volume button hold time
-
             if (volume_button_timer.has_triggered()) {
                 if (volume_button_pressed == VOL_UP) {
                     bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
@@ -659,7 +658,6 @@ void loop() {
                 volume_button_timer.start_countdown(VOL_HOLD_REPEAT_TIME);
             }
 
-            interrupts();
 
             //   Read ANC slider
             //   • Update both AS3435
@@ -671,6 +669,8 @@ void loop() {
                 update_animations();
             }
 
+            interrupts();
+
             //   Reset wakeup timer
             //   sleep
             break;
@@ -678,9 +678,11 @@ void loop() {
         case STATE_PAIRING:
             check_battery();
             read_bm83_events();
+            noInterrupts();
             if (animations) {
                 update_animations();
             }
+            interrupts();
 
             break;
 
