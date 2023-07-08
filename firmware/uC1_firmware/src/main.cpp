@@ -158,7 +158,7 @@ void update_animations() {
             case 0:
                 set_ANC_indicator(indicator_LEDs.ColorHSV(batSOC * 220));
 
-                if (is_connected(current_device) && (animation_step % 4 != 0)) {
+                if (is_connected(current_device) || (animation_step % 4 != 0)) {
                     switch (current_device) {
                     case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
                     case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
