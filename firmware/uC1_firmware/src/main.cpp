@@ -144,10 +144,10 @@ void update_animations() {
                 animation_step++;
                 break;
             }
-            break;
 
             animation_timer.start_countdown(PAIRING_ANIM_BLINK_TIME);
         }
+        break;
     }
 
     case ANIM_NONE: {
@@ -180,7 +180,6 @@ void update_animations() {
                 break;
             }
         }
-
         break;
     }
 
