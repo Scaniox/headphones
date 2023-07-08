@@ -30,7 +30,7 @@ Event_Timer power_button_timer;
 volatile RIGHT_MASK volume_button_pressed = NONE;
 volatile uint32_t volume_button_pressed_start_time = 0;
 uint32_t volume_button_pressed_repeat_time = 0;
-// Event_Timer volume_button_timer;
+Event_Timer volume_button_timer;
 
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
@@ -513,6 +513,8 @@ void power_button_isr() {
 
 // right side 
 void right_button_press_handler(char right_side_data) {
+    volume_button_timer.stop();
+
     if (is_connected(0) || is_connected(1)) {
         // button press
         volume_button_pressed = NONE;
@@ -520,7 +522,7 @@ void right_button_press_handler(char right_side_data) {
             // increase volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
             volume_button_pressed = VOL_UP;
-            volume_button_pressed_start_time = millis();
+            volume_button_timer.start_countdown(VOL_HOLD_START_TIME);
             Serial.println("VOL_UP");
         }
 
@@ -528,7 +530,7 @@ void right_button_press_handler(char right_side_data) {
             // decrease volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
             volume_button_pressed = VOL_DOWN;
-            volume_button_pressed_start_time = millis();
+            volume_button_timer.start_countdown(VOL_HOLD_START_TIME);
             Serial.println("VOL_DOWN");
         }
 
@@ -655,23 +657,21 @@ void loop() {
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
-            interrupts();
 
             // volume button hold time
-            if (millis() - volume_button_pressed_start_time > VOL_HOLD_START_TIME
-                && volume_button_pressed != NONE ) {
-                
-                if (millis() - volume_button_pressed_repeat_time > VOL_HOLD_REPEAT_TIME) {
-                    if (volume_button_pressed == VOL_UP) {
-                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
-                    }
-                    else if (volume_button_pressed == VOL_DOWN) {
-                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
-                    }
 
-                    volume_button_pressed_repeat_time = millis();
+            if (volume_button_timer.has_triggered()) {
+                if (volume_button_pressed == VOL_UP) {
+                    bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
                 }
+                else if (volume_button_pressed == VOL_DOWN) {
+                    bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
+                }
+
+                volume_button_timer.start_countdown(VOL_HOLD_REPEAT_TIME);
             }
+
+            interrupts();
 
             //   Read ANC slider
             //   • Update both AS3435
