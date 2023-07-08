@@ -34,7 +34,7 @@ volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
 volatile ANIMATIONS current_animation = ANIM_NONE;
 bool animations = true;
-// Event_Timer animation_timer;
+Event_Timer animation_timer;
 
 volatile uint8_t ear_R_dark_reading  = 0;
 volatile uint8_t ear_R_light_reading = 0;
@@ -68,107 +68,97 @@ void start_animation(ANIMATIONS anim) {
 
     current_animation = anim;
     animation_step = 0;
-    animation_start_time = millis();
+    animation_timer.start_countdown(0);
 }
 
 void update_animations() {
-    uint32_t animation_time = millis() - animation_start_time;
+
     switch (current_animation) {
     case ANIM_POWER_ON: {
-        uint32_t blink_time = animation_time % (POWER_ANIM_BLINK_TIME * 2);
-        switch (animation_step % 2) {
-        case 0:
-            if (blink_time < POWER_ANIM_BLINK_TIME) {
+        
+        if (animation_timer.has_triggered()) {
+            switch (animation_step % 2) {
+            case 0:
                 set_power_indicator(POWER_ON_BLUE);
                 animation_step++;
-            }
-            break;
-        case 1:
-            if (blink_time > POWER_ANIM_BLINK_TIME) {
+                break;
+            case 1:
                 set_power_indicator(0);
                 animation_step++;
+                break;
             }
-            break;
-        }
-        // end of animation
-        if (animation_step > 3) {
-            start_animation(ANIM_NONE);
-            set_power_indicator(DISCONECTED_ORANGE);
+
+            // end of animation
+            if (animation_step > 3) {
+                start_animation(ANIM_NONE);
+                set_power_indicator(DISCONECTED_ORANGE);
+            }
+
+            animation_timer.start_countdown(POWER_ANIM_BLINK_TIME);
         }
         break;
     }
 
     case ANIM_POWER_OFF: {
-        uint32_t blink_time = animation_time % (POWER_ANIM_BLINK_TIME * 2);
-        if (animation_step == 0) {
-            bm83.powerOff(current_device);
-        }
 
-        switch (animation_step % 2) {
-        case 0:
-            if (blink_time < POWER_ANIM_BLINK_TIME) {
+        if (animation_timer.has_triggered()) {
+
+            if (animation_step == 0) {
+                bm83.powerOff(current_device);
+            }
+
+            switch (animation_step % 2) {
+            case 0:
                 set_power_indicator(POWER_OFF_RED);
                 animation_step++;
-            }
-            break;
-        case 1:
-            if (blink_time > POWER_ANIM_BLINK_TIME) {
+                break;
+            case 1:
                 set_power_indicator(0);
                 animation_step++;
+                break;
             }
-            break;
-        }
-        // end of animation
-        if (animation_step > 5) {
-            start_animation(ANIM_NONE);
-            power_off();
+
+            // end of animation
+            if (animation_step > 5) {
+                start_animation(ANIM_NONE);
+                power_off();
+            }
+
+            animation_timer.start_countdown(POWER_ANIM_BLINK_TIME);
         }
         break;
     }
 
     case ANIM_PAIRING: {
-        uint32_t blink_time = animation_time % (PAIRING_ANIM_BLINK_TIME * 2);
-        switch (animation_step % 2) {
-        case 0:
-            if (blink_time < PAIRING_ANIM_BLINK_TIME) {
+        if (animation_timer.has_triggered()) {
+            switch (animation_step % 2) {
+            case 0:
                 switch (current_device) {
                 case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
                 case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
                 }
                 animation_step++;
-            }
-            break;
-        case 1:
-            if (blink_time > PAIRING_ANIM_BLINK_TIME) {
+                break;
+            case 1:
                 set_power_indicator(DISCONECTED_ORANGE);
                 animation_step++;
+                break;
             }
             break;
+
+            animation_timer.start_countdown(PAIRING_ANIM_BLINK_TIME);
         }
-        break;
     }
 
     case ANIM_NONE: {
         // connected device - solid light of that colour
         // unconnected device - light of that colour blinks with yellow
-        uint32_t blink_time = animation_time % (IDLE_BLINK_ON_TIME + IDLE_BLINK_OFF_TIME);
-        switch (animation_step % 4) {
-        case 0:
-            if (blink_time < IDLE_BLINK_ON_TIME) {
+        if (animation_timer.has_triggered()) {
+            switch (animation_step % 2) {
+            case 0:
                 set_ANC_indicator(indicator_LEDs.ColorHSV(batSOC * 220));
 
-                switch (current_device) {
-                case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
-                case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
-                }
-                animation_step++;
-            }
-            break;
-        case 2:
-            if (blink_time < IDLE_BLINK_ON_TIME) {
-                set_ANC_indicator(indicator_LEDs.ColorHSV(batSOC * 220));
-
-                if (is_connected(current_device)) {
+                if (is_connected(current_device) && (animation_step % 4 != 0)) {
                     switch (current_device) {
                     case 0: set_power_indicator(DEVICE_ONE_GREEN);  break;
                     case 1: set_power_indicator(DEVICE_TWO_PURPLE); break;
@@ -177,18 +167,18 @@ void update_animations() {
                 else {
                     set_power_indicator(DISCONECTED_ORANGE);
                 }
-                animation_step++;
-            }
-            break;
 
-        case 1:
-        case 3:
-            if (blink_time > IDLE_BLINK_ON_TIME) {
+                animation_step++;
+                animation_timer.start_countdown(IDLE_BLINK_ON_TIME);
+                break;
+
+            case 1:
                 set_power_indicator(0);
                 set_ANC_indicator(0);
                 animation_step++;
+                animation_timer.start_countdown(IDLE_BLINK_OFF_TIME);
+                break;
             }
-            break;
         }
 
         break;
