@@ -266,7 +266,7 @@ void check_battery() {
         bm83.report_Battery_Capacity(batSOC);
 
         if (batSOC < LOW_BAT_SHUTOFF_SOC) {
-            start_animation(ANIM_POWER_OFF);
+            // start_animation(ANIM_POWER_OFF);
         }
     }
 }
