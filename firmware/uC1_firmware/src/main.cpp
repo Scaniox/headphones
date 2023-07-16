@@ -22,13 +22,14 @@ OPERATION_STATES current_state = STATE_OFF;
 ANC_MODE anc_mode = ANC;
 bool charging = false;
 int8_t current_device = 0;
-uint32_t last_battery_check = 0;
+
+Event_Timer battery_check_timer;
 float batSOC = 0;
 
 Event_Timer power_button_timer;
 
-volatile RIGHT_MASK volume_button_pressed = NONE;
 Event_Timer volume_button_timer;
+volatile RIGHT_MASK volume_button_pressed = NONE;
 
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
@@ -259,8 +260,8 @@ void read_bm83_events() {
 }
 
 void check_battery() {
-    if (millis() - last_battery_check > BATTERY_CHECK_INTERVAL) {
-        last_battery_check = millis();
+    if (battery_check_timer.has_triggered()) {
+        battery_check_timer.start_countdown(BATTERY_CHECK_INTERVAL);
 
         batSOC = constrain(fuel_guage.getSoC(), 0, 100);
         bm83.report_Battery_Capacity(batSOC);
@@ -331,7 +332,7 @@ void send_full_status() {
     Serial.printf("anc_mode: %i\n", anc_mode);
 
     Serial.printf("charging: %i\n", digitalRead(PIN_CHRG_STAT));
-    Serial.printf("bat soc: %f\n", fuel_guage.getSoC());
+    Serial.printf("bat soc: %f\n", batSOC);
     Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
     Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
 
@@ -597,13 +598,13 @@ void setup() {
     fuel_guage.quickStart();
 
     // usb serial
-    USBDevice.standby();
     Serial.begin(115200);
 
     // set up BM83
     digitalWrite(PIN_BM83_PROG_EN, HIGH); // normal boot, not prog boot
     bm83.begin(PIN_BM83_RESET);
     bm83.enterPairingMode(0);
+    bm83.resetLow();
 
     // set up right side serial
     right_serial.begin(9600);
@@ -611,6 +612,15 @@ void setup() {
 
     // assign interrupts
     attachInterrupt(digitalPinToInterrupt(PIN_PWR_SW), power_button_isr, CHANGE);
+
+    // Set the XOSC32K to run in standby
+    SYSCTRL->XOSC32K.bit.RUNSTDBY = 1;
+
+    // Configure EIC to use GCLK1 which uses XOSC32K 
+    // This has to be done after the first call to attachInterrupt()
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(GCM_EIC) |
+        GCLK_CLKCTRL_GEN_GCLK1 |
+        GCLK_CLKCTRL_CLKEN;
 
     // configures other stuff
     power_on();
@@ -621,8 +631,11 @@ void setup() {
     indicator_LEDs.fill(0x00ffffff);
     indicator_LEDs.show();
 
-    delay(500);
-
+    delay(5000);
+    
+    // start battery check timer
+    battery_check_timer.start_countdown(BATTERY_CHECK_INTERVAL);
+    battery_check_timer.stop();
 }
 
 void loop() {
@@ -720,5 +733,5 @@ void loop() {
     }
 
     delay(10);
-    Event_Timer::event_timers_stat();
+    Event_Timer::sleep_until_next_trigger();
 }

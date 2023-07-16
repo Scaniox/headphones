@@ -11,13 +11,18 @@
 bool Event_Timer::rtc_initialised = false;
 RTCZero Event_Timer::rtc = RTCZero();
 
-etl::vector<Event_Timer*, 3> all_timers = etl::vector<Event_Timer*, 3>(); 
+etl::vector<Event_Timer*, MAX_TIMERS> all_timers = etl::vector<Event_Timer*, MAX_TIMERS>();
+
+void count_done() {
+    Serial.println("rtc finished");
+}
 
 
 Event_Timer::Event_Timer() {
     // only initialise the RTC if it isn't already intialised
     if (!rtc_initialised) {
         rtc.begin(true, 0, false, RTCZero::Prescaler::MODE0_DIV1);
+        rtc.attachInterrupt(count_done);
 
         rtc_initialised = true;
     }
@@ -32,13 +37,6 @@ void Event_Timer::start_countdown(uint32_t time) {
     start_time = Event_Timer::get_sys_time_ms();
     trigger_time = start_time + time;
     triggered = false;
-
-    // if (trigger_times.available()) {
-    //     trigger_times.push(trigger_time);
-    // }
-    // else {
-    //     Serial.printf("trigger times queue is full, failed to add timer, stalling likely\n");
-    // }
 }
 
 // stops the timer, so it won't trigger
@@ -88,23 +86,28 @@ void Event_Timer::event_timers_stat() {
 }
 
 
-// returns (ms) how long until the next timer will trigger
-uint32_t Event_Timer::global_time_to_next_trigger() {
-    // // remove old ones
-    // while (!trigger_times.empty() && trigger_times.top() < get_sys_time_ms()) {
-    //     trigger_times.pop();
-    // }
-
-    // if (trigger_times.empty()) {
-    //     return 0;
-    // }
-    
-    // return trigger_times.top();
+// returns (ms [rtc ticks]) when the next trigger of any timer will happen
+uint32_t Event_Timer::global_next_trigger_time() {
+    uint32_t current_min = UINT32_MAX;
+    for(uint8_t timer_index = 0; timer_index < all_timers.size(); timer_index++) {
+        if(!(all_timers[timer_index]->triggered)) {
+            current_min = min(current_min, all_timers[timer_index]->trigger_time);
+        }
+    }
+    return current_min;
 }
 
 // sleeps until the next timer triggers
 void Event_Timer::sleep_until_next_trigger() {
-    // millis_offset += Watchdog.sleep(global_time_to_next_trigger());
+    // go to sleep
+    rtc.enableCounter(global_next_trigger_time());
+
+    if(!Serial.dtr()){
+        rtc.standbyMode();
+    }
+
+    
+    // restart usb
     USBDevice.attach();
 }
 

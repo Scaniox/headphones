@@ -14,6 +14,8 @@
                      // with more RTC modes (ms counter modes, as well as usual date time mode)
 #include "etl/vector.h"
 
+#define MAX_TIMERS 5
+
 class Event_Timer {
     public:
         volatile bool triggered = true;
@@ -30,7 +32,7 @@ class Event_Timer {
         
 
         static void event_timers_stat();
-        static uint32_t global_time_to_next_trigger();
+        static uint32_t global_next_trigger_time();
         static void sleep_until_next_trigger();
 
         static RTCZero rtc;
