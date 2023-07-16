@@ -10,7 +10,8 @@
 // initialise statics
 bool Event_Timer::rtc_initialised = false;
 RTCZero Event_Timer::rtc = RTCZero();
-TRIGGERS_PRIORITY_QUEUE_t Event_Timer::trigger_times = TRIGGERS_PRIORITY_QUEUE_t();
+
+etl::vector<Event_Timer*, 3> all_timers = etl::vector<Event_Timer*, 3>(); 
 
 
 Event_Timer::Event_Timer() {
@@ -20,6 +21,9 @@ Event_Timer::Event_Timer() {
 
         rtc_initialised = true;
     }
+
+    // add this timer to the vector of all timers
+    all_timers.push_back(this);
 }
 
 
@@ -69,18 +73,33 @@ bool Event_Timer::has_triggered() {
     }
 }
 
-// returns (ms) how long until the next timer will trigger
-uint32_t Event_Timer::global_time_to_next_trigger() {
-    // remove old ones
-    while (!trigger_times.empty() && trigger_times.top() < get_sys_time_ms()) {
-        trigger_times.pop();
+// print out the state of all timers:
+void Event_Timer::event_timers_stat() {
+    Serial.printf("==================TIMER STATUS==================\n");
+
+    Serial.printf("there are: %i timers\n", all_timers.size());
+    Serial.printf("index || start time ||  end time  || triggered ||\n");
+    for (uint8_t timer_index = 0; timer_index < all_timers.size(); timer_index++) {
+        Event_Timer* this_timer = all_timers[timer_index];
+        Serial.printf("%5i || %10i || %10i || %9i ||\n", timer_index, this_timer->start_time, this_timer->trigger_time, this_timer->triggered);
     }
 
-    if (trigger_times.empty()) {
-        return 0;
-    }
+    Serial.printf("================================================\n\n");
+}
+
+
+// returns (ms) how long until the next timer will trigger
+uint32_t Event_Timer::global_time_to_next_trigger() {
+    // // remove old ones
+    // while (!trigger_times.empty() && trigger_times.top() < get_sys_time_ms()) {
+    //     trigger_times.pop();
+    // }
+
+    // if (trigger_times.empty()) {
+    //     return 0;
+    // }
     
-    return trigger_times.top();
+    // return trigger_times.top();
 }
 
 // sleeps until the next timer triggers

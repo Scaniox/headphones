@@ -374,6 +374,10 @@ void debug_parse(String s) {
         send_bt_status();
     }
 
+    if (s == "timer stat") {
+        Event_Timer::event_timers_stat();
+    }
+
     if (s == "driver on") {
         as3435_L.set_output_driver_en(1);
         delay(10);
@@ -593,6 +597,7 @@ void setup() {
     fuel_guage.quickStart();
 
     // usb serial
+    USBDevice.standby();
     Serial.begin(115200);
 
     // set up BM83
@@ -715,4 +720,5 @@ void loop() {
     }
 
     delay(10);
+    Event_Timer::event_timers_stat();
 }
