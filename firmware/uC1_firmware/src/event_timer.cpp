@@ -8,8 +8,20 @@
 #include "event timer.h" 
 
 // initialise statics
-uint32_t Event_Timer::millis_offset = 0;
+bool Event_Timer::rtc_initialised = false;
+RTCZero Event_Timer::rtc = RTCZero();
 TRIGGERS_PRIORITY_QUEUE_t Event_Timer::trigger_times = TRIGGERS_PRIORITY_QUEUE_t();
+
+
+Event_Timer::Event_Timer() {
+    // only initialise the RTC if it isn't already intialised
+    if (!rtc_initialised) {
+        rtc.begin(true, 0, false, RTCZero::Prescaler::MODE0_DIV1);
+
+        rtc_initialised = true;
+    }
+}
+
 
 // sets the timer to trigger in [time] ms
 void Event_Timer::start_countdown(uint32_t time) {
@@ -73,11 +85,11 @@ uint32_t Event_Timer::global_time_to_next_trigger() {
 
 // sleeps until the next timer triggers
 void Event_Timer::sleep_until_next_trigger() {
-    millis_offset += Watchdog.sleep(global_time_to_next_trigger());
+    // millis_offset += Watchdog.sleep(global_time_to_next_trigger());
     USBDevice.attach();
 }
 
 // get the current system time (ms)
 uint32_t Event_Timer::get_sys_time_ms() {
-    return millis() + millis_offset;
+    return rtc.getCount();
 }

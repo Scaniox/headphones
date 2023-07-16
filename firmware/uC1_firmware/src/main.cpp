@@ -640,7 +640,7 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
-            noInterrupts();
+            // noInterrupts();
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
@@ -668,7 +668,7 @@ void loop() {
                 update_animations();
             }
 
-            interrupts();
+            // interrupts();
 
             //   Reset wakeup timer
             //   sleep
@@ -677,11 +677,11 @@ void loop() {
         case STATE_PAIRING:
             check_battery();
             read_bm83_events();
-            noInterrupts();
+            // noInterrupts();
             if (animations) {
                 update_animations();
             }
-            interrupts();
+            // interrupts();
 
             break;
 
