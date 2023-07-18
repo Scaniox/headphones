@@ -14,7 +14,7 @@ RTCZero Event_Timer::rtc = RTCZero();
 etl::vector<Event_Timer*, MAX_TIMERS> all_timers = etl::vector<Event_Timer*, MAX_TIMERS>();
 
 void count_done() {
-    Serial.println("rtc finished");
+    // Serial.println("rtc finished");
 }
 
 
@@ -101,14 +101,10 @@ uint32_t Event_Timer::global_next_trigger_time() {
 void Event_Timer::sleep_until_next_trigger() {
     // go to sleep
     rtc.enableCounter(global_next_trigger_time());
+    // rtc.standbyMode();
 
-    if(!Serial.dtr()){
-        rtc.standbyMode();
-    }
-
-    
     // restart usb
-    USBDevice.attach();
+    // USBDevice.attach();
 }
 
 // get the current system time (ms)

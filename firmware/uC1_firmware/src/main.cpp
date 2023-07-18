@@ -221,9 +221,12 @@ void stop_pairing() {
 
 void read_bm83_events() {
     // check for events from bm83
-    while (bm83.btSerial->available() > 3) {
+    int x;
+    while ((x = bm83.btSerial->available()) > 3) {
+        Serial.printf("%i bytes from bt available", x);
         bm83.getNextEventFromBt();
     }
+    Serial.println("next events parse done");
 
     if (bm83.btmStatusChanged) {
         // bm83.readLinkStatus();
@@ -589,6 +592,7 @@ void setup() {
     pinMode(PIN_CHRG_STAT, INPUT_PULLUP);
     pinMode(PIN_BAT_ALRT, INPUT_PULLUP);
 
+
     // set up i2c bus
     Wire.begin();
     Wire.setClock(400000);
@@ -642,15 +646,19 @@ void loop() {
     switch (current_state) {
         case STATE_OFF:
             noInterrupts();
+            Serial.println("intrs dissabled off");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
             interrupts();
+            Serial.println("intrs enabled off");
             break;                               
 
         case STATE_ON:
             check_battery();
+            Serial.println("battery check done");
             read_bm83_events();
+            Serial.println("bm83 events done");
 
             //   Read on ear sensors :
             // • One ear : reduce volume
@@ -658,10 +666,13 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
-            // noInterrupts();
+            noInterrupts();
+            Serial.println("intrs dissabled on");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
+            interrupts();
+            Serial.println("intrs enabled on");
 
             // volume button hold time
             if (volume_button_timer.has_triggered()) {
@@ -675,6 +686,8 @@ void loop() {
                 volume_button_timer.start_countdown(VOL_HOLD_REPEAT_TIME);
             }
 
+            Serial.println("volume button hold done");
+
 
             //   Read ANC slider
             //   • Update both AS3435
@@ -685,6 +698,7 @@ void loop() {
             if (animations) {
                 update_animations();
             }
+            Serial.println("animations done");
 
             // interrupts();
 
