@@ -63,6 +63,7 @@ bool Event_Timer::has_elapsed() {
 // used to trigger the timer finishing actions
 bool Event_Timer::has_triggered() {
     // dissabling isrs here prevents the triggered changing mid-evaluation
+    // actually only pcint ISRS need to be paused, but all is easier
     noInterrupts();
     bool triggering = has_elapsed() && !triggered;
     interrupts();

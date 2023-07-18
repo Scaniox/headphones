@@ -645,18 +645,14 @@ void setup() {
 void loop() {
     switch (current_state) {
         case STATE_OFF:
-            Serial.println("intrs dissabled off");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
-            Serial.println("intrs enabled off");
             break;                               
 
         case STATE_ON:
             check_battery();
-            Serial.println("battery check done");
             read_bm83_events();
-            Serial.println("bm83 events done");
 
             //   Read on ear sensors :
             // • One ear : reduce volume
@@ -664,11 +660,9 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
-            Serial.println("intrs dissabled on");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
-            Serial.println("intrs enabled on");
 
             // volume button hold time
             if (volume_button_timer.has_triggered()) {
@@ -682,9 +676,6 @@ void loop() {
                 volume_button_timer.start_countdown(VOL_HOLD_REPEAT_TIME);
             }
 
-            Serial.println("volume button hold done");
-
-
             //   Read ANC slider
             //   • Update both AS3435
 
@@ -694,9 +685,7 @@ void loop() {
             if (animations) {
                 update_animations();
             }
-            Serial.println("animations done");
 
-            // interrupts();
 
             //   Reset wakeup timer
             //   sleep
@@ -705,11 +694,9 @@ void loop() {
         case STATE_PAIRING:
             check_battery();
             read_bm83_events();
-            // noInterrupts();
             if (animations) {
                 update_animations();
             }
-            // interrupts();
 
             break;
 

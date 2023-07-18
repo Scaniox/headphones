@@ -10,7 +10,6 @@ uint8_t IS2020::getNextEventFromBt() {
   if (btSerial -> available() > 3) { //min is 3, 0x55 + packet size, then we can read in while loop
     //DBG_EVENTS(F("Get next Event from BT\n"));
     if (btSerial -> read() == 0xAA) { //start of event
-      Serial.println("start byte found");
 
       uint16_t packetSize = (btSerial -> read() << 8) | (btSerial -> read() & 0xff);
 
@@ -30,12 +29,9 @@ uint8_t IS2020::getNextEventFromBt() {
 
           wait_timeout = 0;
         }
-        else {
-          Serial.println("waiting for more parts of packet");
-          
+        else {    
           // break out of the infinite loop of waiting for a dropped packet
           if(wait_timeout++ > 1000) {
-            Serial.println("Sod this!");
             return 0; 
           } 
         }
