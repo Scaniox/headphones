@@ -62,13 +62,17 @@ bool Event_Timer::has_elapsed() {
 // returns true the first time it is called after the timer elapses 
 // used to trigger the timer finishing actions
 bool Event_Timer::has_triggered() {
-    if (has_elapsed() && !triggered){
+    // dissabling isrs here prevents the triggered changing mid-evaluation
+    noInterrupts();
+    bool triggering = has_elapsed() && !triggered;
+    interrupts();
+
+    if (triggering) {
         triggered = true;
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 }
 
 // print out the state of all timers:

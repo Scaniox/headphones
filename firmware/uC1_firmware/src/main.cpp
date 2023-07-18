@@ -645,12 +645,10 @@ void setup() {
 void loop() {
     switch (current_state) {
         case STATE_OFF:
-            noInterrupts();
             Serial.println("intrs dissabled off");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
-            interrupts();
             Serial.println("intrs enabled off");
             break;                               
 
@@ -666,12 +664,10 @@ void loop() {
 
             //   Read power button press duration :
             //   • Enter pairing mode
-            noInterrupts();
             Serial.println("intrs dissabled on");
             if (power_button_timer.has_triggered()) {
                 start_pairing();
             }
-            interrupts();
             Serial.println("intrs enabled on");
 
             // volume button hold time
