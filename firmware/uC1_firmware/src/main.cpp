@@ -223,10 +223,8 @@ void read_bm83_events() {
     // check for events from bm83
     int x;
     while ((x = bm83.btSerial->available()) > 3) {
-        Serial.printf("%i bytes from bt available", x);
         bm83.getNextEventFromBt();
     }
-    Serial.println("next events parse done");
 
     if (bm83.btmStatusChanged) {
         // bm83.readLinkStatus();
