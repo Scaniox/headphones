@@ -268,7 +268,7 @@ void check_battery() {
         bm83.report_Battery_Capacity(batSOC);
 
         if (batSOC < LOW_BAT_SHUTOFF_SOC) {
-            // start_animation(ANIM_POWER_OFF);
+            start_animation(ANIM_POWER_OFF);
         }
     }
 }
@@ -637,7 +637,6 @@ void setup() {
     
     // start battery check timer
     battery_check_timer.start_countdown(BATTERY_CHECK_INTERVAL);
-    battery_check_timer.stop();
 }
 
 void loop() {
