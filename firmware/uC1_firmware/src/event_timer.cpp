@@ -106,10 +106,10 @@ uint32_t Event_Timer::global_next_trigger_time() {
 void Event_Timer::sleep_until_next_trigger() {
     // go to sleep
     rtc.enableCounter(global_next_trigger_time());
-    // rtc.standbyMode();
+    rtc.standbyMode();
 
     // restart usb
-    // USBDevice.attach();
+    USBDevice.attach();
 }
 
 // get the current system time (ms)

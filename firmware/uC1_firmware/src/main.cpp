@@ -728,5 +728,9 @@ void loop() {
     }
 
     delay(10);
-    Event_Timer::sleep_until_next_trigger();
+
+    // higher power usage in pairing mode, but it will be much easier to program
+    if (current_state != STATE_PAIRING) {
+        Event_Timer::sleep_until_next_trigger();
+    }
 }
