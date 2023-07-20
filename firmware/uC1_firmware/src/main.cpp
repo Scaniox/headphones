@@ -43,6 +43,8 @@ volatile uint8_t ear_R_light_reading = 0;
 bool debug_serial = true;
 String debug_input = "";
 
+extern bool asleep;
+
 /******************************************************************************/
 // action functions
 /******************************************************************************/
@@ -442,6 +444,7 @@ void bm83_serial_bridge() {
 /******************************************************************************/
 // power button isrs
 void power_button_down_isr() {
+    asleep = false;
     // debounce by ignoring very recent presses
     if (power_button_timer.get_time_running() < 2) {
         //return;
@@ -487,6 +490,7 @@ void power_button_up_isr() {
 }
 
 void power_button_isr() {
+    asleep = false;
     delayMicroseconds(500);
     // need to ensure that the event timer sys time reading is corrected
 
@@ -506,6 +510,7 @@ void power_button_isr() {
 
 // right side 
 void right_button_press_handler(char right_side_data) {
+    asleep = false;
     volume_button_timer.stop();
 
     if (is_connected(0) || is_connected(1)) {
@@ -545,6 +550,7 @@ void right_button_press_handler(char right_side_data) {
 }
 
 void SERCOM2_Handler() {
+    asleep = false;
     right_serial.IrqHandler();
     if (right_serial.available()) {
         // Serial.printf("right side data: 0x%x\n", right_serial.read());
@@ -637,6 +643,7 @@ void setup() {
     
     // start battery check timer
     battery_check_timer.start_countdown(BATTERY_CHECK_INTERVAL);
+    battery_check_timer.stop();
 }
 
 void loop() {

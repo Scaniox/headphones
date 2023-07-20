@@ -11,10 +11,13 @@
 bool Event_Timer::rtc_initialised = false;
 RTCZero Event_Timer::rtc = RTCZero();
 
+volatile bool asleep = false;
+
 etl::vector<Event_Timer*, MAX_TIMERS> all_timers = etl::vector<Event_Timer*, MAX_TIMERS>();
 
 void count_done() {
     // Serial.println("rtc finished");
+    asleep = false;
 }
 
 
@@ -64,8 +67,11 @@ bool Event_Timer::has_elapsed() {
 bool Event_Timer::has_triggered() {
     // dissabling isrs here prevents the triggered changing mid-evaluation
     // actually only pcint ISRS need to be paused, but all is easier
+    // uint32_t saved_EVCTRL = REG_EIC_EVCTRL;
     noInterrupts();
+    // REG_EIC_EVCTRL = 0;
     bool triggering = has_elapsed() && !triggered;
+    // REG_EIC_EVCTRL = saved_EVCTRL; 
     interrupts();
 
     if (triggering) {
@@ -99,6 +105,7 @@ uint32_t Event_Timer::global_next_trigger_time() {
             current_min = min(current_min, all_timers[timer_index]->trigger_time);
         }
     }
+    Serial.printf("%i ms to next trigger\n", current_min - get_sys_time_ms());
     return current_min;
 }
 
@@ -106,10 +113,19 @@ uint32_t Event_Timer::global_next_trigger_time() {
 void Event_Timer::sleep_until_next_trigger() {
     // go to sleep
     rtc.enableCounter(global_next_trigger_time());
+    asleep = true;
+    Serial.println("enter sleep");
     rtc.standbyMode();
+    // uint16_t loops = 0;
+    // while(asleep) {
+    //     if(loops++ % 500 == 0) {
+    //         Serial.println("sleeping");
+    //     }
+    // }
+    Serial.println("exit sleep");
 
     // restart usb
-    USBDevice.attach();
+    // USBDevice.attach();
 }
 
 // get the current system time (ms)
