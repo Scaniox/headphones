@@ -639,8 +639,13 @@ void loop() {
             //     && power_button_pressed) {
             //     start_pairing();
             // }
-            Watchdog.sleep(500);
-            USBDevice.attach();
+            // Watchdog.sleep(500);
+            // USBDevice.attach();
+
+            if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME
+                && power_button_pressed) {
+                NVIC_SystemReset();
+            }
             
             break;                               
 
