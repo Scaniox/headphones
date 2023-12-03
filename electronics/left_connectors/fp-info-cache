@@ -1,4 +1,4 @@
-21465001851292718
+21548672963976682
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -78532,6 +78532,356 @@ TO-264-5 Vertical RM 3.81mm
 0
 5
 5
+Part DB Footprints
+21-0168E_T822-3_MXM
+
+MAX17048G+T10 
+0
+9
+9
+Part DB Footprints
+21-0168E_T822-3_MXM-L
+
+MAX17048G+T10 
+0
+9
+9
+Part DB Footprints
+21-0168E_T822-3_MXM-M
+
+MAX17048G+T10 
+0
+9
+9
+Part DB Footprints
+4832.2330
+
+
+0
+4
+4
+Part DB Footprints
+BM83
+
+
+0
+52
+50
+Part DB Footprints
+CAS-D20TB
+
+
+0
+6
+6
+Part DB Footprints
+CON18_1X18_DR_SFV_GLE
+
+SFV18R-1STE1LF 
+0
+20
+20
+Part DB Footprints
+CON18_1X18_DUTB_HRS_HIR
+
+FH12-18S-0.5SV55 
+0
+22
+22
+Part DB Footprints
+CS-4-12XA
+
+
+0
+3
+3
+Part DB Footprints
+CUI_SJ-3524-SMT
+
+
+0
+4
+4
+Part DB Footprints
+CUS13B
+CUS-13B-2
+Switch
+0
+8
+8
+Part DB Footprints
+CVS-02TB
+
+
+0
+4
+4
+Part DB Footprints
+CVS-02TB mirrored
+
+
+0
+4
+4
+Part DB Footprints
+DM3D-SF
+
+
+0
+14
+14
+Part DB Footprints
+EG1218
+
+
+0
+3
+3
+Part DB Footprints
+EVQ_P7_PAN
+
+EVQ-P7A01P 
+0
+4
+2
+Part DB Footprints
+EVQ_P7_PAN-L
+
+EVQ-P7A01P 
+0
+4
+4
+Part DB Footprints
+EVQ_P7_PAN-M
+
+EVQ-P7A01P 
+0
+4
+4
+Part DB Footprints
+EXB-38V103JV
+
+
+0
+8
+8
+Part DB Footprints
+GCT_USB4110-GF-A_REVB
+
+
+0
+16
+16
+Part DB Footprints
+ICS_43432
+
+
+0
+8
+8
+Part DB Footprints
+INPI15TAT5R5G5B
+IN-PI15TAT5R5G5B-1
+LED
+0
+4
+4
+Part DB Footprints
+JLS1300-08-1F
+
+
+0
+6
+6
+Part DB Footprints
+NCV8605MN33T2G
+
+
+0
+7
+7
+Part DB Footprints
+PinHeader_1x03_P2.54mm zero footprint
+Through hole straight pin header, 1x03, 2.54mm pitch, single row
+Through hole pin header THT 1x03 2.54mm single row
+0
+3
+3
+Part DB Footprints
+PinSocket_2x03_P2.54mm zero footprint
+Through hole straight socket strip, 2x03, 2.54mm pitch, double cols (from Kicad 4.0.7), script generated
+Through hole socket strip THT 2x03 2.54mm double row
+0
+6
+6
+Part DB Footprints
+PinSocket_2x03_P2.54mm zero footprint mirror
+Through hole straight socket strip, 2x03, 2.54mm pitch, double cols (from Kicad 4.0.7), script generated
+Through hole socket strip THT 2x03 2.54mm double row
+0
+6
+6
+Part DB Footprints
+PinSocket_2x05_P2.54mm zero footprint
+Through hole straight socket strip, 2x05, 2.54mm pitch, double cols (from Kicad 4.0.7), script generated
+Through hole socket strip THT 2x05 2.54mm double row
+0
+10
+10
+Part DB Footprints
+PinSocket_2x05_P2.54mm zero footprint mirror
+Through hole straight socket strip, 2x05, 2.54mm pitch, double cols (from Kicad 4.0.7), script generated
+Through hole socket strip THT 2x05 2.54mm double row
+0
+10
+10
+Part DB Footprints
+QFN-36_EP_5.9x5.9_Pitch0.4mm
+
+
+0
+52
+37
+Part DB Footprints
+SMD-LX0707RGB-TR
+
+
+0
+4
+4
+Part DB Footprints
+SW8_JS203011JAQN_CNK
+
+JS203011JAQN 
+0
+8
+8
+Part DB Footprints
+SW_CAS-D20TA
+
+
+0
+6
+6
+Part DB Footprints
+SW_TL3780AF240QG
+
+
+0
+2
+2
+Part DB Footprints
+TL3365_button
+
+
+0
+4
+2
+Part DB Footprints
+TinyPICO_Nano
+
+
+0
+37
+36
+Part DB Footprints
+USB_Micro-B_Molex-105017-0001
+http://www.molex.com/pdm_docs/sd/1050170001_sd.pdf
+Micro-USB SMD Typ-B
+0
+13
+6
+Part DB Footprints
+VQFN50P600X600X100-36N
+
+
+0
+37
+37
+Part DB Footprints
+WE 6 position SKEDD
+<b>WR-WST REDFIT IDC SKEDD<br><br></b>For permanent application up to 10g vibration stable
+
+0
+6
+6
+Part DB Footprints
+bottom outer
+
+
+0
+0
+0
+Part DB Footprints
+max9850eti&plus_
+
+
+0
+29
+29
+Part DB Footprints
+micros
+
+
+0
+0
+0
+Part DB Footprints
+mouse-bite-1mm-slot
+
+
+0
+0
+0
+Part DB Footprints
+mouse-bite-2.54mm-slot
+
+
+0
+0
+0
+Part DB Footprints
+mouse-bite-2mm-slot
+
+
+0
+0
+0
+Part DB Footprints
+mouse-bite-3mm-slot
+
+
+0
+0
+0
+Part DB Footprints
+pins
+
+
+0
+0
+0
+Part DB Footprints
+sd card
+
+
+0
+19
+11
+Part DB Footprints
+text
+
+
+0
+0
+0
+Part DB Footprints
+top outer
+
+
+0
+0
+0
 Potentiometer_SMD
 Potentiometer_ACP_CA6-VSMD_Vertical
 Potentiometer, vertical, ACP CA6-VSMD, http://www.acptechnologies.com/wp-content/uploads/2017/06/01-ACP-CA6.pdf

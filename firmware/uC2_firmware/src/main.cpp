@@ -45,6 +45,9 @@ enum {
 #define DEBOUNCE_WAIT_TIME 50
 #define DEBOUNCE_HOLDOFF_TIME 100
 
+#define VOL_HOLD_START_TIME 500
+#define VOL_HOLD_REPEAT_TIME 300
+
 #define P_VOL_UP    PIN_PA2
 #define P_VOL_DOWN  PIN_PA3
 #define P_PAUSE     PIN_PA4
@@ -58,19 +61,39 @@ enum {
 
 int last_press_time = 0;
 
+// transmit the positions of all the buttons
+void send_button_states() {
+    uint8_t buttons = 0x80;
+    buttons |= (!digitalRead(P_VOL_UP) & 0x01) << VOL_UP;
+    buttons |= (!digitalRead(P_VOL_DOWN) & 0x01) << VOL_DOWN;
+    buttons |= (!digitalRead(P_PAUSE) & 0x01) << PAUSE;
+    buttons |= (!digitalRead(P_BACK) & 0x01) << BACK;
+    buttons |= (!digitalRead(P_FWRD) & 0x01) << FWRD;
+    Serial.write(buttons);
+}
+
+void stop_repeat_timer() {
+    TCCR1B &= !(_BV(CS12) | _BV(CS11) | _BV(CS10));
+}
+
+// starts repeat timer
+void start_repeat_timer(uint16_t repeat_count) {
+    stop_repeat_timer();
+    TCNT1 = 0;
+    OCR1A = repeat_count;
+    TCCR1B = _BV(CS12) | _BV(CS10);
+}
+
+
 // pin change interrupt
 ISR(PCINT0_vect) {
     for (int _=0; _< DEBOUNCE_WAIT_TIME; _++) {
         delayMicroseconds(1000u);
     }
 
-    uint8_t buttons = 0x80;
-    buttons |= (!digitalRead(P_VOL_UP) & 0x01)   << VOL_UP;
-    buttons |= (!digitalRead(P_VOL_DOWN) & 0x01) << VOL_DOWN;
-    buttons |= (!digitalRead(P_PAUSE) & 0x01)    << PAUSE;
-    buttons |= (!digitalRead(P_BACK) & 0x01)     << BACK;
-    buttons |= (!digitalRead(P_FWRD) & 0x01)     << FWRD;
-    Serial.write(buttons);
+    (void) send_button_states();
+    // start timer 1
+    start_repeat_timer(VOL_HOLD_START_TIME);
 
     // clear flag for this interrupt so it doesn't re-trigger immediately due to 
     // switch bounce
@@ -78,6 +101,15 @@ ISR(PCINT0_vect) {
 }
 
 ISR(WDT_vect) { }
+
+ISR(TIMER1_COMPA_vect) {
+    stop_repeat_timer();
+
+    if(!digitalRead(P_VOL_UP) || !digitalRead(P_VOL_DOWN)) {
+        send_button_states();
+        start_repeat_timer(VOL_HOLD_REPEAT_TIME);
+    }
+}
 
 void setup() {
     cli();
@@ -104,6 +136,12 @@ void setup() {
     UCSR0B &= ~_BV(RXEN0); // disable RX
     // set to alternate pin (PA7)
     REMAP |= _BV(U0MAP);
+
+    // set up vol repeat timer (tc1a)
+    TCCR1A = 0;
+    TCCR1B = 0;
+    TIMSK1 = _BV(OCIE1A); // enable TIMER_1_COMPA_vect interrupt
+
 
     // // set up WDT
     // WDTCSR |= 1 << WDIE; // WDT interrupt

@@ -28,10 +28,6 @@ float batSOC = 0;
 volatile bool power_button_pressed = false;          // used for hold and double presses
 volatile uint32_t power_button_pressed_start_time = 0;  // used for button press timing
 
-volatile RIGHT_MASK volume_button_pressed = NONE;
-volatile uint32_t volume_button_pressed_start_time = 0;
-uint32_t volume_button_pressed_repeat_time = 0;
-
 volatile uint32_t animation_start_time = 0;
 volatile uint8_t animation_step = 0;
 volatile ANIMATIONS current_animation = ANIM_NONE;
@@ -345,7 +341,8 @@ void send_full_status() {
     Serial.printf("charging: %i\n", digitalRead(PIN_CHRG_STAT));
     Serial.printf("bat soc: %f\n", fuel_guage.getSoC());
     Serial.printf("bm83 bat_level: %i, %i\n", bm83.btmBatteryStatus[0], bm83.btmBatteryStatus[1]);
-    Serial.printf("bat voltage: %f\n", fuel_guage.getVCell());
+    Serial.printf("bat voltage bms: %f\n", fuel_guage.getVCell());
+    Serial.printf("bat voltage adc: %d\n", analogRead(PIN_BAT_V_SENSE) );
 
     Serial.printf("power_button_pressed_start_time: %i\n", power_button_pressed_start_time);
     Serial.printf("power_button_pressed: %i\n",power_button_pressed);
@@ -516,20 +513,15 @@ void power_button_isr() {
 void right_button_press_handler(char right_side_data) {
     if (is_connected(0) || is_connected(1)) {
         // button press
-        volume_button_pressed = NONE;
         if (right_side_data & (1 << VOL_UP)) {
             // increase volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
-            volume_button_pressed = VOL_UP;
-            volume_button_pressed_start_time = millis();
             Serial.println("VOL_UP");
         }
 
         if (right_side_data & (1 << VOL_DOWN)) {
             // decrease volume
             bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
-            volume_button_pressed = VOL_DOWN;
-            volume_button_pressed_start_time = millis();
             Serial.println("VOL_DOWN");
         }
 
@@ -662,22 +654,6 @@ void loop() {
             if (millis() - power_button_pressed_start_time > PAIRING_HOLD_TIME 
                 && power_button_pressed) {
                 start_pairing();
-            }
-
-            // volume button hold time
-            if (millis() - volume_button_pressed_start_time > VOL_HOLD_START_TIME
-                && volume_button_pressed != NONE ) {
-                
-                if (millis() - volume_button_pressed_repeat_time > VOL_HOLD_REPEAT_TIME) {
-                    if (volume_button_pressed == VOL_UP) {
-                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_UP);
-                    }
-                    else if (volume_button_pressed == VOL_DOWN) {
-                        bm83.setOverallGain(current_device, OVERALL_GAIN_MASK_A2DP, OVERALL_GAIN_TYPE_VOL_DOWN);
-                    }
-
-                    volume_button_pressed_repeat_time = millis();
-                }
             }
 
             //   Read ANC slider

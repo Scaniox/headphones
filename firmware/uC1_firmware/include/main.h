@@ -29,8 +29,6 @@
 #define PAIRING_HOLD_TIME 2000
 #define POWER_OFF_HOLD_TIME 500
 
-#define VOL_HOLD_START_TIME 400
-#define VOL_HOLD_REPEAT_TIME 200
 
 // pin definitions
 #define PIN_EAR_SENSE_L_EN      A3

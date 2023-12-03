@@ -1042,7 +1042,7 @@ uint8_t IS2020::getNextEventFromBt() {
 
                                   */
                                   /*float f_*/uint16_t time_S = time / 1000;
-                                  Serial.println(String(time_S / 60) + ":" + String(time_S % 60));
+                                  // Serial.println(String(time_S / 60) + ":" + String(time_S % 60));
                                 }
                               }
                           }
