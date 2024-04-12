@@ -1,0 +1,134 @@
+
+;;;      0  1  2  3  4  5  6  7     8  9  A  B  C  D  E  F
+0000    02 49 09 01 05 00 12 01     03 18 04 24 05 01 0A 0B     ;
+0010    01 4A 0C 01 D5 17 02 01     00 02 02 00 0D 0B 08 41     ;
+0020    4C 4D 20 4A 37 38 39 14     01 7C 03 0C 00 3D 04 01     ;
+0030    0A 0A 10 00 A2 A5 C2 C5     E2 E5 FC FC FC FC FC FC     ;
+0040    FC FC FC 0B 01 97 0F 01     A0 11 01 60 14 01 0A 17     ;
+0050    01 60 1B 01 4C 1C 01 00     20 01 05 24 0B 06 00 00     ;
+0060    00 00 00 00 07 00 00 00     28 01 00 04 03 00 21 01     ;
+0070    0D 0C 09 41 4C 4D 20 4A     37 38 39 2D 4C 45 02 0D     ;
+0080    0C 09 41 4C 4D 20 4A 37     38 39 2D 4C 45 0C 01 81     ;
+0090    07 02 00 85 08 01 C1 0B     80 C4 C3 C2 02 01 1C 00     ;
+00A0    1B 1A 00 00 16 00 00 00     00 00 00 00 0C 0C 00 00     ;
+00B0    00 0F 00 00 00 00 06 01     00 00 00 00 00 00 00 00     ;
+00C0    00 00 00 00 00 00 00 00     00 00 00 00 00 00 C0 00     ;
+00D0    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+00E0    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+00F0    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0100    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0110    00 00 00 00 00 00 00 00     00 0A 01 00 03 0A 01 00     ;
+0120    0C 01 00 56 04 54 00 00     00 00 00 00 00 00 00 00     ;
+0130    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0140    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0150    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0160    00 00 00 00 00 00 00 00     00 00 00 00 00 00 00 00     ;
+0170    00 00 00 00 00 00 40 00     00 00 0D 02 00 09 09 01     ;
+0180    00 01 04 3F 00 09 86 0E     01 00 C0 01 BE 00 00 00     ;
+0190    1F 00 5F EB 1F 00 01 00     00 00 01 00 00 10 10 00     ;
+01A0    60 00 00 00 1F 00 2F EB     1F 00 01 00 00 00 01 00     ;
+01B0    00 10 10 00 60 00 00 00     1F 00 0F EB 1F 00 01 00     ;
+01C0    00 00 01 00 00 10 10 00     60 00 00 00 1F 00 0F EB     ;
+01D0    1F 00 01 00 00 00 01 00     00 10 10 00 60 00 00 00     ;
+01E0    1F 00 07 EB 1F 00 01 00     00 00 01 00 00 10 10 00     ;
+01F0    60 00 00 00 1F 00 07 EB     1F 00 01 00 00 00 01 00     ;
+
+;;;      0  1  2  3  4  5  6  7     8  9  A  B  C  D  E  F
+0200    00 10 10 00 60 12 03 E9     06 78 12 03 E9 06 78 11     ;
+0210    03 F4 1E 78 12 03 E9 06     78 11 03 F4 1E 78 12 03     ;
+0220    E9 06 78 00 00 00 1F 00     0F EB 1F 00 01 00 00 00     ;
+0230    01 00 00 10 10 00 60 00     00 00 1F 00 0F EB 1F 00     ;
+0240    01 00 00 00 01 00 00 10     10 00 60         ;
+
+
+[== Audio Function ==]
+[ LineIn ]
+   --- Silence Detection Threshold                  | 0x14:-66dBOv
+
+[ Sound Effect ]
+   --- Multi-Band Dynamic Range Compression(MB-DRC) | (v) 
+   --- Audio Widening(AW)                           | (v) 
+   --- Virtual Bass(VB)                             | ( ) 
+   --- Audio Effect Mask                            | (v)All Off | ( )MB-DRC on| (v)All On | ( )AW On
+   --- Default Audio Effect                         | All Off
+   --- Knee Th                                      | -6dBov |-6dBov |-12dBov
+   --- Compression Ratio                            | 1/2 |1/3 |1/3
+   --- Make-Up Gain                                 | 5dB |3dB |2dB
+   --- Attack Time                                  | 20ms |20ms |20ms
+   --- Release Time                                 | 50ms |50ms |50ms
+   --- Bass Enhancement                             | 0x00
+   --- Cutoff-Freq (Bass Enhancement)               | 200Hz
+   --- Audio Widening Level                         | 0x0F: Highest level
+
+[ EQ ]
+   --- Equalizer                                    | (v) 
+   --- Initial Value                                | Custom EQ
+   --- EQ Mask Selection                            |  
+                                                    | (v)Off
+                                                    | (v)SOFT
+                                                    | (v)BASS
+                                                    | (v)TREBLE
+                                                    | (v)CLASSICAL
+                                                    | (v)ROCK
+                                                    | (v)JAZZ
+                                                    | (v)POP
+                                                    | (v)DANCE
+                                                    | (v)Rhythm and Blues
+                                                    | (v)Custom EQ
+
+[ Audio Line-In Silence Suppression ]
+   --- Silence data reversion and Fade-out of data  | 3
+   --- Silence supp threshold                       | 31
+   --- Silence supp MeanVariance thrd               | 255
+   --- Silence supp fadeout step                    | 64
+   --- Silence supp tuning counter                  | 240
+   --- Line-in supp minimum gain                    | 0
+   --- Silence supp fadein base step                | 64
+---------------------------------------------------------------------------
+
+[== Voice Function ==]
+[ Filter ]
+   --- Speaker -- HighPass Filter                   | Cutoff Freq: 50Hz
+   --- MIC -- HighPass Filter                       | Cutoff Freq: 50Hz
+
+[ NR ]
+   --- Speaker -- Noise Reduction                   | 15dB Noise Suppression -- Default
+   --- MIC -- Noise Reduction                       | 18dB Noise Suppression
+
+[ EQ ]
+   --- Speaker -- EQ                                | EQ Off
+   --- MIC -- EQ                                    | EQ Off
+
+[ MIC Gain/ComfortNoise ]
+   --- NE MIC Digital Gain                          | ( ) 
+   --- MIC Gain(Digital)                            | 0x1D:  10dB
+   --- WNG Enable/Disable                           | ( ) 
+   --- Comfort Noise                                | 0x0D:-78dB -- Default Level
+   --- FE Digital Gain                              | ( ) 
+   --- Gain SPKOut                                  | 0x0D:  -6dB
+
+[ AEC/AES ]
+   --- AEC On/Off                                   | ( ) 
+   --- AES On/Off                                   | ( ) 
+   --- Stepsize                                     | 0x02: 
+   --- Tap Length                                   | 0x05: 40msec Echo Tail
+   --- Linear AEC Thrd                              | 0x7F: Worst Linearity | 0x7F: Worst Linearity-mSBC
+   --- AES Suppression                              | 0x04:  | 0x04:-mSBC 
+   --- Double-Talk Threshold                        | 0x50:  | 0x50:-mSBC 
+
+---------------------------------------------------------------------------
+
+
+[== I2S/PCM ==]
+   --- 24Bit To 16Bit Truncate                      | ( ) 
+   --- MCLK                                         | ( ) 
+   --- MCLK selection:                              | 128 fs
+   --- I2S Mode                                     | Master mode
+   --- Data Bitwidth                                | 16bit
+   --- Loopback ADC Selection                       | Embedded ADC
+   --- Mic ADC Selection                            | Embedded ADC
+   --- DAC Selection                                | Embedded DAC
+   --- RFS Setting                                  | RFS high level -> Left channel
+
+---------------------------------------------------------------------------
+
